@@ -102,20 +102,19 @@ class Server {
      * @param int    $worker_id worker id
      */
     public function onWorkerStart($server, $worker_id) {
-        if ($worker_id != 0) {
-            return;
-        }
-
-        $server->tick(1000, function() use ($server) {
-            $fds = $server->heartbeat(false);
-            if (empty($fds)) {
+        try {
+            if ($worker_id != 0) {
                 return;
             }
 
-            foreach ($fds as $fd) {
-                $server->close($fd);
-            }
-        });
+            $self = $this;
+            $server->tick(1000, function() use ($self, $server) {
+                $fds = $server->heartbeat(false);
+                $self->close($fds);
+            });
+        } catch (Exception $e) {
+            handle_exception($e);
+        }
     }
 
 
@@ -130,7 +129,7 @@ class Server {
         try {
             Session::getInstance()->create($fd);
         } catch (Exception $e) {
-            handle_exception($e);
+            $this->sendError($fd, $e->getMessage());
         }
     }
 
@@ -165,7 +164,7 @@ class Server {
 
             $this->{$method}($server, $fd, $reactor_id, $data['data']);
         } catch (Exception $e) {
-            handle_exception($e);
+            $this->sendError($fd, $e->getMessage());
         }
     }
 
@@ -181,7 +180,42 @@ class Server {
         try {
             Session::getInstance()->destroy($fd);
         } catch (Exception $e) {
-            handle_exception($e);
+            $this->sendError($fd, $e->getMessage());
+        }
+    }
+
+
+    /**
+     * onPing
+     *
+     * @param Server $server     server
+     * @param int    $fd         fd
+     * @param int    $reactor_id reactor id
+     * @param object $data       data
+     */
+    public function onPing($server, $fd, $reactor_id, $data) {
+        $this->send($fd, 'ping');
+    }
+
+
+    /**
+     * Close.
+     *
+     * @param array $fds fds
+     */
+    public function close($fds) {
+        foreach ($this->_close($fds) as $i) { }
+    }
+
+
+    /*
+     * Close.
+     *
+     * @param array $fds fds
+     */
+    protected function _close($fds) {
+        foreach ($fds as $fd) {
+            yield $this->_server->close($fd);
         }
     }
 
@@ -202,6 +236,25 @@ class Server {
             'type' => $type,
             'data' => $data
         ]));
+    }
+
+
+    /**
+     * Send error.
+     *
+     * @param int    $fd      fd
+     * @param string $message message
+     */
+    public function sendError($fd, $message) {
+        try {
+            if (($fd < 0) || empty($message)) {
+                throw new Exception('wrong fd/message');
+            }
+
+            $this->send($fd, 'error', [ 'message' => $message ]);
+        } catch (Exception $e) {
+            handle_exception($e);
+        }
     }
 
 
