@@ -35,13 +35,13 @@ class Register extends Server {
             $type = Session::getInstance()->get($fd, 'type');
             if ($type == 'server') {
                 $name = Session::getInstance()->get($fd, 'server');
-                $ip = Session::getInstance()->get($fd, 'ip');
+                $host = Session::getInstance()->get($fd, 'host');
                 $port = Session::getInstance()->get($fd, 'port');
-                ServerAddress::getInstance()->unregister($name, $fd, $ip, $port);
+                ServerAddress::getInstance()->unregister($name, $fd, $host, $port);
                 $this->sendToGroup($name, 'unregister', [
                     'server' => $name,
                     'fd' => $fd,
-                    'host' => $ip,
+                    'host' => $host,
                     'port' => $port
                 ]);
             }
@@ -78,7 +78,7 @@ class Register extends Server {
 
         Session::getInstance()->set($fd, 'type', 'server');
         Session::getInstance()->set($fd, 'server', $data['server']);
-        Session::getInstance()->set($fd, 'ip', $connection['remote_ip']);
+        Session::getInstance()->set($fd, 'host', $connection['remote_ip']);
         Session::getInstance()->set($fd, 'port', $data['port']);
         Group::getInstance()->join($fd, $data['server']);
         ServerAddress::getInstance()->register($data['server'], $fd, $connection['remote_ip'], $data['port']);
