@@ -84,6 +84,10 @@ class Server {
             throw new Exception('init failed');
         }
 
+        if ($this->_heartbeatIdleTime <= 0) {
+            throw new Exception('wrong heartbeat idle time');
+        }
+
         $this->_server->set([
             'heartbeat_idle_time' => $this->_heartbeatIdleTime
         ]);
@@ -204,6 +208,10 @@ class Server {
      * @param int $fd fd
      */
     public function close($fd) {
+        if (empty($this->_server)) {
+            throw new Exception('init failed');
+        }
+
         $this->_server->close($fd);
     }
 
@@ -240,6 +248,10 @@ class Server {
     public function send($fd, $type, $data = []) {
         if (($fd < 0) || empty($type)) {
             throw new Exception('wrong fd/type');
+        }
+
+        if (empty($this->_server)) {
+            throw new Exception('init failed');
         }
 
         $this->_server->send($fd, json_encode([

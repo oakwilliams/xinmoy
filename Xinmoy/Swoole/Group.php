@@ -27,6 +27,22 @@ class Group {
     protected static $_instance = null;
 
 
+    /*
+     * Members
+     *
+     * @property array
+     */
+    protected $_members = [];
+
+
+    /*
+     * Groups
+     *
+     * @property array
+     */
+    protected $_groups = [];
+
+
     /**
      * Get instance.
      *
@@ -45,22 +61,6 @@ class Group {
      * Construct.
      */
     protected function __construct() { }
-
-
-    /*
-     * Members
-     *
-     * @property array
-     */
-    protected $_members = [];
-
-
-    /*
-     * Groups
-     *
-     * @property array
-     */
-    protected $_groups = [];
 
 
     /**

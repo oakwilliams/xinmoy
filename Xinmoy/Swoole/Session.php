@@ -27,6 +27,14 @@ class Session {
     protected static $_instance = null;
 
 
+    /*
+     * Sessions
+     *
+     * @property array
+     */
+    protected $_sessions = [];
+
+
     /**
      * Get instance.
      *
@@ -45,14 +53,6 @@ class Session {
      * Construct.
      */
     protected function __construct() { }
-
-
-    /*
-     * Sessions
-     *
-     * @property array
-     */
-    protected $_sessions = [];
 
 
     /**

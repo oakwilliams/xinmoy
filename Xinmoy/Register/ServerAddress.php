@@ -27,6 +27,14 @@ class ServerAddress {
     protected static $_instance = null;
 
 
+    /*
+     * Addresses
+     *
+     * @property array
+     */
+    protected $_addresses = [];
+
+
     /**
      * Get instance.
      *
@@ -45,14 +53,6 @@ class ServerAddress {
      * Construct.
      */
     protected function __construct() { }
-
-
-    /*
-     * Addresses
-     *
-     * @property array
-     */
-    protected $_addresses = [];
 
 
     /**
