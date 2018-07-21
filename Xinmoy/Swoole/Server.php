@@ -110,7 +110,7 @@ class Server {
             $self = $this;
             $server->tick(1000, function() use ($self, $server) {
                 $fds = $server->heartbeat(false);
-                $self->close($fds);
+                $self->closeMany($fds);
             });
         } catch (Exception $e) {
             handle_exception($e);
@@ -201,21 +201,31 @@ class Server {
     /**
      * Close.
      *
+     * @param int $fd fd
+     */
+    public function close($fd) {
+        $this->_server->close($fd);
+    }
+
+
+    /**
+     * Close many.
+     *
      * @param array $fds fds
      */
-    public function close($fds) {
-        foreach ($this->_close($fds) as $i) { }
+    public function closeMany($fds) {
+        foreach ($this->_closeMany($fds) as $i) { }
     }
 
 
     /*
-     * Close.
+     * Close many.
      *
      * @param array $fds fds
      */
-    protected function _close($fds) {
+    protected function _closeMany($fds) {
         foreach ($fds as $fd) {
-            yield $this->_server->close($fd);
+            yield $this->close($fd);
         }
     }
 
