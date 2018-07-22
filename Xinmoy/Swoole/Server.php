@@ -30,6 +30,22 @@ class Server {
 
 
     /*
+     * Host
+     *
+     * @property string
+     */
+    protected $_host = '';
+
+
+    /*
+     * Port
+     *
+     * @property int
+     */
+    protected $_port = -1;
+
+
+    /*
      * Heartbeat Idle Time
      *
      * @property int
@@ -48,6 +64,8 @@ class Server {
             throw new Exception('wrong host/port');
         }
 
+        $this->_host = $host;
+        $this->_port = $port;
         $this->_server = new SwooleServer($host, $port, SWOOLE_BASE, SWOOLE_SOCK_TCP);
     }
 
