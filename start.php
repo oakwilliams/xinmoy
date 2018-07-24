@@ -35,12 +35,22 @@ if (empty($config)) {
     throw new Exception('wrong config');
 }
 
-// Start register.
-if (!empty($config['register']['enable'])) {
+// Start.
+if (empty($config['role'])) {
+    throw new Exception('wrong role');
+}
+
+switch ($config['role']) {
+    // Start register.
+    case 'register':
     if (empty($config['register']['host']) || ($config['register']['port'] < 0)) {
         throw new Exception('wrong host/port');
     }
 
     $register = new Register($config['register']['host'], $config['register']['port']);
     $register->start();
+    break;
+
+    default:
+        break;
 }
