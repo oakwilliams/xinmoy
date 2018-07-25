@@ -110,31 +110,4 @@ class RegistrationClient extends AsyncClient {
             handle_exception($e);
         }
     }
-
-
-    /**
-     * onRegister
-     *
-     * @param Client $client client
-     * @param array  $data   data
-     */
-    public function onRegister($client, $data) { }
-
-
-    /**
-     * onUnregister
-     *
-     * @param Client $client client
-     * @param array  $data   data
-     */
-    public function onUnregister($client, $data) { }
-
-
-    /**
-     * onDiscover
-     *
-     * @param Client $client client
-     * @param array  $data   data
-     */
-    public function onDiscover($client, $data) { }
 }

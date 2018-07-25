@@ -180,7 +180,7 @@ class Server {
 
             $method = "on{$data['type']}";
             if (!method_exists($this, $method)) {
-                throw new Exception('wrong type');
+                return;
             }
 
             if (!isset($data['data'])) {

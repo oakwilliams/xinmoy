@@ -187,7 +187,7 @@ class AsyncClient {
 
             $method = "on{$data['type']}";
             if (!method_exists($this, $method)) {
-                throw new Exception('wrong type');
+                return;
             }
 
             if (!isset($data['data'])) {
@@ -199,15 +199,6 @@ class AsyncClient {
             handle_exception($e);
         }
     }
-
-
-    /**
-     * onPing
-     *
-     * @param Client $client client
-     * @param array  $data   data
-     */
-    public function onPing($client, $data) { }
 
 
     /**
