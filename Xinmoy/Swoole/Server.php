@@ -16,6 +16,8 @@ use Exception;
 
 use Swoole\Server as SwooleServer;
 
+use Xinmoy\Lib\Log;
+
 
 /**
  * Server
@@ -166,6 +168,7 @@ class Server {
      */
     public function onReceive($server, $fd, $reactor_id, string $data) {
         try {
+            Log::getInstance()->log("receive: {$data}");
             $data = json_decode($data, true);
             if (empty($data)) {
                 throw new Exception('wrong data');
@@ -272,10 +275,12 @@ class Server {
             throw new Exception('init failed');
         }
 
-        $this->_server->send($fd, json_encode([
+        $message = json_encode([
             'type' => $type,
             'data' => $data
-        ]));
+        ]);
+        $this->_server->send($fd, $message);
+        Log::getInstance()->log("send: $message");
     }
 
 

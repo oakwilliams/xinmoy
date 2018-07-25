@@ -12,7 +12,9 @@
 require_once 'vendor/autoload.php';
 
 
+use Xinmoy\Lib\Log;
 use Xinmoy\Register\Register;
+use Xinmoy\Server\Server;
 
 
 /**
@@ -21,7 +23,8 @@ use Xinmoy\Register\Register;
  * @param Exception $e exception
  */
 function handle_exception($e) {
-    echo $e->getMessage() . "\n";
+    $message = $e->getMessage();
+    Log::getInstance()->log($message);
 }
 
 
@@ -50,6 +53,26 @@ switch ($config['role']) {
     $register = new Register($config['register']['host'], $config['register']['port']);
     $register->start();
     break;
+
+    // Start server.
+    case 'server':
+        if (empty($config['server']['host']) || ($config['server']['port'] < 0)) {
+            throw new Exception('wrong server host/port');
+        }
+
+        if (empty($config['server']['name'])) {
+            throw new Exception('wrong name');
+        }
+
+        if (empty($config['register']['host']) || ($config['register']['port'] < 0)) {
+            throw new Exception('wrong register host/port');
+        }
+
+        $server = new Server($config['server']['host'], $config['server']['port']);
+        $server->setName($config['server']['name']);
+        $server->setRegisterAddress($config['register']['host'], $config['register']['port']);
+        $server->start();
+        break;
 
     default:
         break;

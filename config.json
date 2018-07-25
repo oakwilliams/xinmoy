@@ -3,5 +3,10 @@
     "register": {
         "host": "0.0.0.0",
         "port": 8000
+    },
+    "server": {
+        "name": "com.xinmoy.test",
+        "host": "0.0.0.0",
+        "port": 8000
     }
 }
