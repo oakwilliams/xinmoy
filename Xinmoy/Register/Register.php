@@ -37,6 +37,19 @@ class Register extends Server {
                 $name = Session::getInstance()->get($fd, 'server');
                 $host = Session::getInstance()->get($fd, 'host');
                 $port = Session::getInstance()->get($fd, 'port');
+
+                if (empty($name)) {
+                    throw new Exception('wrong server');
+                }
+
+                if (empty($host)) {
+                    throw new Exception('wrong host');
+                }
+
+                if ($port < 0) {
+                    throw new Exception('wrong port');
+                }
+
                 ServerAddress::getInstance()->unregister($name, $fd, $host, $port);
                 $this->sendToGroup($name, 'unregister', [
                     'server' => $name,
