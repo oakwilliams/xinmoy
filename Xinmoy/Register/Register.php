@@ -80,7 +80,7 @@ class Register extends Server {
             throw new Exception('wrong server');
         }
 
-        if ($data['port'] < 0) {
+        if (!isset($data['port']) || ($data['port'] < 0)) {
             throw new Exception('wrong port');
         }
 

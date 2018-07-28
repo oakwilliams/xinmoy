@@ -65,7 +65,7 @@ function start_register($config) {
         throw new Exception('wrong config');
     }
 
-    if (empty($config['register']['host']) || ($config['register']['port'] < 0)) {
+    if (empty($config['register']['host']) || (!isset($config['register']['port'])) || ($config['register']['port'] < 0)) {
         throw new Exception('wrong host/port');
     }
 
@@ -84,7 +84,7 @@ function start_server($config) {
         throw new Exception('wrong config');
     }
 
-    if (empty($config['server']['host']) || ($config['server']['port'] < 0)) {
+    if (empty($config['server']['host']) || (!isset($config['server']['port'])) || ($config['server']['port'] < 0)) {
         throw new Exception('wrong server host/port');
     }
 
@@ -92,7 +92,7 @@ function start_server($config) {
         throw new Exception('wrong name');
     }
 
-    if (empty($config['register']['host']) || ($config['register']['port'] < 0)) {
+    if (empty($config['register']['host']) || (!isset($config['register']['port'])) || ($config['register']['port'] < 0)) {
         throw new Exception('wrong register host/port');
     }
 
