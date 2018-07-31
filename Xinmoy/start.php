@@ -50,8 +50,11 @@ function autoload_service($class) {
  * @param Exception $e exception
  */
 function handle_exception($e) {
+    $file = $e->getFile();
+    $line = $e->getLine();
     $message = $e->getMessage();
-    Log::getInstance()->log($message);
+    $trace = $e->getTraceAsString();
+    Log::getInstance()->log("$file($line): $message\n$trace");
 }
 
 
