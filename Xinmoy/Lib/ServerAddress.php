@@ -9,7 +9,7 @@
  */
 
 
-namespace Xinmoy\Register;
+namespace Xinmoy\Lib;
 
 
 use Exception;
@@ -22,7 +22,7 @@ class ServerAddress {
     /*
      * Instance
      *
-     * @static Session
+     * @static ServerAddress
      */
     protected static $_instance = null;
 
@@ -38,7 +38,7 @@ class ServerAddress {
     /**
      * Get instance.
      *
-     * @return Session
+     * @return ServerAddress
      */
     public static function getInstance() {
         if (empty(self::$_instance)) {
