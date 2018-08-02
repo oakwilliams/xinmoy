@@ -68,7 +68,7 @@ class ServerAddress {
             throw new Exception('wrong server/fd/host/port');
         }
 
-        $this->_addresses[$server]["{$fd}|{$host}:{$port}"] = [
+        $this->_addresses[$server]["{$host}:{$port}"][$fd] = [
             'server' => $server,
             'fd' => $fd,
             'host' => $host,
@@ -90,7 +90,7 @@ class ServerAddress {
             throw new Exception('wrong server/fd/host/port');
         }
 
-        unset($this->_addresses[$server]["{$fd}|{$host}:{$port}"]);
+        unset($this->_addresses[$server]["{$host}:{$port}"][$fd]);
     }
 
 
