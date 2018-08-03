@@ -131,11 +131,24 @@ class Server {
                 return;
             }
 
-            $self = $this;
-            $server->tick(1000, function() use ($self, $server) {
-                $fds = $server->heartbeat(false);
-                $self->closeMany($fds);
-            });
+            $server->tick(1000, [ $this, 'onHeartbeatCheck' ]);
+        } catch (Exception $e) {
+            handle_exception($e);
+        }
+    }
+
+
+    /**
+     * onHeartbeatCheck
+     */
+    public function onHeartbeatCheck() {
+        try {
+            if (empty($this->_server)) {
+                throw new Exception('init failed');
+            }
+
+            $fds = $this->_server->heartbeat(false);
+            $this->closeMany($fds);
         } catch (Exception $e) {
             handle_exception($e);
         }

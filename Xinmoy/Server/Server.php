@@ -115,33 +115,39 @@ class Server extends SwooleServer {
      * Add registration process.
      */
     protected function _addRegistrationProcess() {
-        if (empty($this->_registerHost) || ($this->_registerPort < 0)) {
-            throw new Exception('wrong register host/port');
-        }
-
-        if (empty($this->_name)) {
-            throw new Exception('wrong name');
-        }
-
-        if ($this->_port < 0) {
-            throw new Exception('wrong server port');
-        }
-
         if (empty($this->_server)) {
             throw new Exception('init failed');
         }
 
-        $register_host = $this->_registerHost;
-        $register_port = $this->_registerPort;
-        $name = $this->_name;
-        $port = $this->_port;
-        $process = new Process(function() use ($register_host, $register_port, $name, $port) {
-            $client = new RegistrationClient($register_host, $register_port);
-            $client->setServer($name);
-            $client->setServerPort($port);
-            $client->connect();
-        });
+        $process = new Process([ $this, 'onRegistrationProcessAdd' ]);
         $this->_server->addProcess($process);
+    }
+
+
+    /**
+     * onRegistrationProcessAdd
+     */
+    public function onRegistrationProcessAdd() {
+        try {
+            if (empty($this->_registerHost) || ($this->_registerPort < 0)) {
+                throw new Exception('wrong register host/port');
+            }
+
+            if (empty($this->_name)) {
+                throw new Exception('wrong name');
+            }
+
+            if ($this->_port < 0) {
+                throw new Exception('wrong server port');
+            }
+
+            $client = new RegistrationClient($this->_registerHost, $this->_registerPort);
+            $client->setServer($this->_name);
+            $client->setServerPort($this->_port);
+            $client->connect();
+        } catch (Exception $e) {
+            handle_exception($e);
+        }
     }
 
 

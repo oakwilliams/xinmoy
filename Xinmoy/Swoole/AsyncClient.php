@@ -147,6 +147,18 @@ class AsyncClient {
 
 
     /**
+     * onHeartbeatSend
+     */
+    public function onHeartbeatSend() {
+        try {
+            $this->send('ping');
+        } catch (Exception $e) {
+            handle_exception($e);
+        }
+    }
+
+
+    /**
      * onConnect
      *
      * @param Client $client client
@@ -157,10 +169,7 @@ class AsyncClient {
                 throw new Exception('wrong heartbeat check interval');
             }
 
-            $self = $this;
-            $this->_timerId = Timer::tick($this->_heartbeatCheckInterval * 1000, function() use ($self) {
-                $self->send('ping');
-            });
+            $this->_timerId = Timer::tick($this->_heartbeatCheckInterval * 1000, [ $this, 'onHeartbeatSend' ]);
         } catch (Exception $e) {
             handle_exception($e);
         }
