@@ -108,6 +108,9 @@ class Register extends Server {
 
         Group::getInstance()->join($fd, $data['server']);
         $addresses = ServerAddress::getInstance()->discover($data['server']);
-        $this->send($fd, 'discover', $addresses);
+        $this->send($fd, 'discover', [
+            'server' => $data['server'],
+            'addresses' => $addresses
+        ]);
     }
 }
