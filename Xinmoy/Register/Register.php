@@ -39,16 +39,8 @@ class Register extends Server {
                 $host = Session::getInstance()->get($fd, 'host');
                 $port = Session::getInstance()->get($fd, 'port');
 
-                if (empty($name)) {
-                    throw new Exception('wrong server');
-                }
-
-                if (empty($host)) {
-                    throw new Exception('wrong host');
-                }
-
-                if ($port < 0) {
-                    throw new Exception('wrong port');
+                if (empty($name) || empty($host) || ($port < 0)) {
+                    throw new Exception('wrong server/host/port');
                 }
 
                 ServerAddress::getInstance()->unregister($name, $fd, $host, $port);
@@ -77,12 +69,8 @@ class Register extends Server {
      * @param object $data       data
      */
     public function onRegister($server, $fd, $reactor_id, $data) {
-        if (empty($data['server'])) {
-            throw new Exception('wrong server');
-        }
-
-        if (!isset($data['port']) || ($data['port'] < 0)) {
-            throw new Exception('wrong port');
+        if (empty($data['server']) || !isset($data['port']) || ($data['port'] < 0)) {
+            throw new Exception('wrong server/port');
         }
 
         $connection = $server->connection_info($fd);
