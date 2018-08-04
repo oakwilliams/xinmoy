@@ -5,8 +5,9 @@
         "port": 8000
     },
     "server": {
-        "name": "com.xinmoy.test",
+        "name": "Demo\\Service",
         "host": "0.0.0.0",
-        "port": 8000
+        "port": 8000,
+        "dependencies": []
     }
 }

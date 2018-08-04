@@ -95,6 +95,21 @@ class ServerAddress {
 
 
     /**
+     * Set.
+     *
+     * @param string $server    server
+     * @param array  $addresses addresses
+     */
+    public function set($server, $addresses) {
+        if (empty($server)) {
+            throw new Exception('wrong server');
+        }
+
+        $this->_addresses[$server] = $addresses;
+    }
+
+
+    /**
      * Discover.
      *
      * @param string $server server
@@ -107,5 +122,50 @@ class ServerAddress {
         }
 
         return isset($this->_addresses[$server]) ? $this->_addresses[$server] : [];
+    }
+
+
+    /**
+     * Has?
+     *
+     * @param string $server server
+     * @param string $host   host
+     * @param int    $port   port
+     *
+     * @return bool
+     */
+    public function has($server, $host, $port) {
+        if (empty($server) || empty($host) || ($port < 0)) {
+            throw new Exception('wrong server/host/port');
+        }
+
+        return !empty($this->_addresses[$server]["{$host}:{$port}"]);
+    }
+
+
+    /**
+     * Filter.
+     *
+     * @param string $server server
+     *
+     * @return array
+     */
+    public function filter($server) {
+        if (empty($server)) {
+            throw new Exception('wrong server');
+        }
+
+        $filtered = [];
+        foreach ($this->_addresses[$server] as $addresses) {
+            foreach ($addresses as $address) {
+                $filtered["{$address['host']}:{$address['port']}"] = [
+                    'server' => $address['server'],
+                    'host' => $address['host'],
+                    'port' => $address['port']
+                ];
+                break;
+            }
+        }
+        return $filtered;
     }
 }

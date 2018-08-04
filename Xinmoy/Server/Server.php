@@ -18,6 +18,7 @@ use Swoole\Process;
 
 use Xinmoy\Swoole\Server as SwooleServer;
 use Xinmoy\Client\RegistrationClient;
+use Xinmoy\Client\DiscoveryClient;
 
 
 /**
@@ -46,6 +47,14 @@ class Server extends SwooleServer {
      * @property int
      */
     protected $_registerPort = -1;
+
+
+    /*
+     * Servers
+     *
+     * @property array
+     */
+    protected $_servers = [];
 
 
     /**
@@ -102,10 +111,31 @@ class Server extends SwooleServer {
 
 
     /**
+     * Set servers.
+     *
+     * @param array $servers servers
+     */
+    public function setServers($servers) {
+        $this->_servers = $servers;
+    }
+
+
+    /**
+     * Get servers.
+     *
+     * @return array
+     */
+    public function getServers() {
+        return $this->_servers;
+    }
+
+
+    /**
      * Start.
      */
     public function start() {
         $this->_addRegistrationProcess();
+        $this->_addDiscoveryProcess();
 
         parent::start();
     }
@@ -124,10 +154,25 @@ class Server extends SwooleServer {
     }
 
 
+    /*
+     * Add discovery process.
+     */
+    protected function _addDiscoveryProcess() {
+        if (empty($this->_server)) {
+            throw new Exception('init failed');
+        }
+
+        $process = new Process([ $this, 'onDiscoveryProcessAdd' ]);
+        $this->_server->addProcess($process);
+    }
+
+
     /**
      * onRegistrationProcessAdd
+     *
+     * @param Process $process process
      */
-    public function onRegistrationProcessAdd() {
+    public function onRegistrationProcessAdd($process) {
         try {
             if (empty($this->_registerHost) || ($this->_registerPort < 0)) {
                 throw new Exception('wrong register host/port');
@@ -144,6 +189,27 @@ class Server extends SwooleServer {
             $client = new RegistrationClient($this->_registerHost, $this->_registerPort);
             $client->setServer($this->_name);
             $client->setServerPort($this->_port);
+            $client->connect();
+        } catch (Exception $e) {
+            handle_exception($e);
+        }
+    }
+
+
+    /**
+     * onDiscoveryProcessAdd
+     *
+     * @param Process $process process
+     */
+    public function onDiscoveryProcessAdd($process) {
+        try {
+            if (empty($this->_registerHost) || ($this->_registerPort < 0)) {
+                throw new Exception('wrong register host/port');
+            }
+
+            $client = new DiscoveryClient($this->_registerHost, $this->_registerPort);
+            $client->setProcess($process);
+            $client->setServers($this->_servers);
             $client->connect();
         } catch (Exception $e) {
             handle_exception($e);

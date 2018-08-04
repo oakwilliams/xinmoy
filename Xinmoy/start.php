@@ -99,9 +99,14 @@ function start_server($config) {
         throw new Exception('wrong register host/port');
     }
 
+    if (!isset($config['server']['dependencies'])) {
+        $config['server']['dependencies'] = [];
+    }
+
     $server = new Server($config['server']['host'], $config['server']['port']);
     $server->setName($config['server']['name']);
     $server->setRegisterAddress($config['register']['host'], $config['register']['port']);
+    $server->setServers($config['server']['dependencies']);
     $server->start();
 }
 
