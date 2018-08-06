@@ -105,6 +105,23 @@ class Group {
     }
 
 
+    /*
+     * Leave all.
+     *
+     * @param int $fd fd
+     */
+    protected function _leaveAll($fd) {
+        if ($fd < 0) {
+            throw new Exception('wrong fd');
+        }
+
+        $groups = $this->getGroups($fd);
+        foreach ($groups as $group) {
+            yield $this->leave($fd, $group);
+        }
+    }
+
+
     /**
      * Ungroup.
      *
@@ -112,6 +129,23 @@ class Group {
      */
     public function ungroup($group) {
         foreach ($this->_ungroup($group) as $i) { }
+    }
+
+
+    /*
+     * Ungroup.
+     *
+     * @param string $group group
+     */
+    protected function _ungroup($group) {
+        if (empty($group)) {
+            throw new Exception('wrong group');
+        }
+
+        $members = $this->getMembers($group);
+        foreach ($members as $member) {
+            yield $this->leave($member, $group);
+        }
     }
 
 
@@ -144,39 +178,5 @@ class Group {
         }
 
         return isset($this->_groups[$fd]) ? $this->_groups[$fd] : [];
-    }
-
-
-    /*
-     * Leave all.
-     *
-     * @param int $fd fd
-     */
-    protected function _leaveAll($fd) {
-        if ($fd < 0) {
-            throw new Exception('wrong fd');
-        }
-
-        $groups = $this->getGroups($fd);
-        foreach ($groups as $group) {
-            yield $this->leave($fd, $group);
-        }
-    }
-
-
-    /*
-     * Ungroup.
-     *
-     * @param string $group group
-     */
-    protected function _ungroup($group) {
-        if (empty($group)) {
-            throw new Exception('wrong group');
-        }
-
-        $members = $this->getMembers($group);
-        foreach ($members as $member) {
-            yield $this->leave($member, $group);
-        }
     }
 }
