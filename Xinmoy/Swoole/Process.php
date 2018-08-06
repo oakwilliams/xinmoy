@@ -73,6 +73,6 @@ trait Process {
             'data' => $data
         ]);
         $this->_process->write($message);
-        Log::getInstance()->log("write: $message");
+        Log::getInstance()->log("write: {$message}");
     }
 }

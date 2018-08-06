@@ -184,7 +184,7 @@ class AsyncClient {
      */
     public function onReceive($client, $data) {
         try {
-            Log::getInstance()->log("receive: $data");
+            Log::getInstance()->log("receive: {$data}");
             $data = json_decode($data, true);
             if (empty($data)) {
                 throw new Exception('wrong data');
@@ -266,6 +266,6 @@ class AsyncClient {
             'data' => $data
         ]);
         $this->_client->send($message);
-        Log::getInstance()->log("send: $message");
+        Log::getInstance()->log("send: {$message}");
     }
 }

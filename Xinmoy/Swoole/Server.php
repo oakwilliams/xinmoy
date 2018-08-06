@@ -293,7 +293,7 @@ class Server {
             'data' => $data
         ]);
         $this->_server->send($fd, $message);
-        Log::getInstance()->log("send: $message");
+        Log::getInstance()->log("send: {$message}");
     }
 
 
