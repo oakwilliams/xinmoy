@@ -15,4 +15,74 @@ namespace Xinmoy\Client;
 /**
  * Service
  */
-class Service { }
+class Service {
+    /*
+     * Client
+     *
+     * @property SyncClient
+     */
+    protected $_client = null;
+
+
+    /*
+     * Namespace
+     *
+     * @property string
+     */
+    protected $_namespace = '';
+
+
+    /*
+     * Class
+     *
+     * @property string
+     */
+    protected $_class = '';
+
+
+    /**
+     * Construct.
+     */
+    public function __construct() {
+        $connection = Connection::getInstance()->select($this->_namespace);
+        if (empty($connection)) {
+            throw new Exception('wrong connection');
+        }
+
+        if (empty($connection['host']) || !isset($connection['port']) || ($connection['port'] < 0)) {
+            throw new Exception('wrong host/port');
+        }
+
+        $this->_client = new CallClient($connection['host'], $connection['port']);
+        $this->_client->connect();
+    }
+
+
+    /**
+     * Destruct.
+     */
+    public function __destruct() {
+        if (empty($this->_client)) {
+            throw new Exception('client init failed');
+        }
+
+        $this->_client->close();
+    }
+
+
+    /**
+     * Call.
+     *
+     * @param string $method    method
+     * @param array  $arguments arguments
+     *
+     * @return mixed
+     */
+    public function __call($method, $arguments) {
+        if (empty($this->_client)) {
+            throw new Exception('client init failed');
+        }
+
+        return $this->_client->call($this->_namespace, $this->_class, $method, $arguments);
+    }
+}

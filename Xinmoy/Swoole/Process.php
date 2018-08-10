@@ -75,4 +75,40 @@ trait Process {
         $this->_process->write($message);
         Log::getInstance()->log("write: {$message}");
     }
+
+
+    /**
+     * onRead
+     */
+    public function onRead() {
+        try {
+            if (empty($this->_process)) {
+                throw new Exception('process init failed');
+            }
+
+            $data = $this->_process->read();
+            Log::getInstance()->log("read: {$data}");
+            $data = json_decode($data, true);
+            if (empty($data)) {
+                throw new Exception('wrong data');
+            }
+
+            if (empty($data['type'])) {
+                throw new Exception('wrong type');
+            }
+
+            $method = "on{$data['type']}";
+            if (!method_exists($this, $method)) {
+                return;
+            }
+
+            if (!isset($data['data'])) {
+                $data['data'] = [];
+            }
+
+            $this->{$method}($data['data']);
+        } catch (Exception $e) {
+            handle_exception($e);
+        }
+    }
 }

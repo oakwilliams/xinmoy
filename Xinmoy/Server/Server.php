@@ -15,16 +15,21 @@ namespace Xinmoy\Server;
 use Exception;
 
 use Swoole\Process;
+use Swoole\Event;
 
 use Xinmoy\Swoole\Server as SwooleServer;
 use Xinmoy\Client\RegistrationClient;
 use Xinmoy\Client\DiscoveryClient;
+use Xinmoy\Client\Discovery;
 
 
 /**
  * Server
  */
 class Server extends SwooleServer {
+    use Discovery;
+
+
     /*
      * Name
      *
@@ -163,7 +168,69 @@ class Server extends SwooleServer {
         }
 
         $process = new Process([ $this, 'onDiscoveryProcessAdd' ]);
+        $this->setProcess($process);
         $this->_server->addProcess($process);
+    }
+
+
+    /**
+     * onWorkerStart
+     *
+     * @param Server $server    server
+     * @param int    $worker_id worker id
+     */
+    public function onWorkerStart($server, $worker_id) {
+        try {
+            parent::onWorkerStart($server, $worker_id);
+
+            if ($worker_id != 0) {
+                return;
+            }
+
+            if (empty($this->_process)) {
+                throw new Exception('process init failed');
+            }
+
+            Event::add($this->_process->pipe, [ $this, 'onRead' ]);
+        } catch (Exception $e) {
+            handle_exception($e);
+        }
+    }
+
+
+    /**
+     * onCall
+     *
+     * @param Server $server     server
+     * @param int    $fd         fd
+     * @param int    $reactor_id reactor id
+     * @param object $data       data
+     */
+    public function onCall($server, $fd, $reactor_id, $data) {
+        try {
+            if (empty($data['namespace']) || empty($data['class']) || empty($data['method'])) {
+                throw new Exception('wrong namespace/class/method');
+            }
+
+            $class = "{$data['namespace']}\\{$data['class']}";
+            if (!class_exists($class)) {
+                throw new Exception('wrong class');
+            }
+
+            $object = new $class();
+            if (!method_exists($object, $data['method'])) {
+                throw new Exception('wrong method');
+            }
+
+            if (!isset($data['arguments'])) {
+                $data['arguments'] = [];
+            }
+
+            $return = call_user_func_array([ $object, $data['method'] ], $data['arguments']);
+            $this->sendReturn($fd, $return);
+        } catch (Exception $e) {
+            $this->sendException($fd, $e);
+        }
     }
 
 
@@ -218,12 +285,55 @@ class Server extends SwooleServer {
 
 
     /**
-     * onCall
+     * Send result.
      *
-     * @param Server $server     server
-     * @param int    $fd         fd
-     * @param int    $reactor_id reactor id
-     * @param object $data       data
+     * @param int    $fd      fd
+     * @param int    $code    code
+     * @param string $message message
+     * @param mixed  $return  return
      */
-    public function onCall($server, $fd, $reactor_id, $data) { }
+    public function sendResult($fd, $code, $message, $return) {
+        if ($fd < 0) {
+            throw new Exception('wrong fd');
+        }
+
+        $this->send($fd, 'call', [
+            'code' => $code,
+            'message' => $message,
+            'data' => $return
+        ]);
+    }
+
+
+    /**
+     * Send return.
+     *
+     * @param int   $fd     fd
+     * @param mixed $return return
+     */
+    public function sendReturn($fd, $return) {
+        $this->sendResult($fd, 0, 'ok', $return);
+    }
+
+
+    /**
+     * Send exception.
+     *
+     * @param int       $fd fd
+     * @param Exception $e  exception
+     */
+    public function sendException($fd, $e) {
+        if (empty($e)) {
+            $e = new Exception('system error', 1);
+        }
+
+        $code = $e->getCode();
+        $message = $e->getMessage();
+
+        if (empty($code)) {
+            $code = 1;
+        }
+
+        $this->sendResult($fd, $code, $message, null);
+    }
 }

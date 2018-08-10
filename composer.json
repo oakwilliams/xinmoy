@@ -1,7 +1,8 @@
 {
     "autoload": {
         "psr-4": {
-            "Xinmoy\\": "Xinmoy/"
+            "Xinmoy\\": "Xinmoy/",
+            "Demo\\": "Demo/"
         }
     }
 }
