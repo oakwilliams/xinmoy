@@ -91,6 +91,9 @@ class ServerAddress {
         }
 
         unset($this->_addresses[$server]["{$host}:{$port}"][$fd]);
+        if (empty($this->_addresses[$server]["{$host}:{$port}"])) {
+            unset($this->_addresses[$server]["{$host}:{$port}"]);
+        }
     }
 
 
@@ -121,7 +124,7 @@ class ServerAddress {
             throw new Exception('wrong server');
         }
 
-        return isset($this->_addresses[$server]) ? $this->_addresses[$server] : [];
+        return isset($this->_addresses[$server]) ? $this->_addresses[$server] : null;
     }
 
 

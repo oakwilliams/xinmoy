@@ -127,7 +127,7 @@ class Connection {
         }
 
         if (empty($this->_connections[$server])) {
-            throw new Exception('wrong server');
+            throw new Exception('nonexisted server');
         }
 
         if (!isset($this->_currents[$server]) || ($this->_currents[$server] < 0)) {

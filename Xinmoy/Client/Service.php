@@ -46,7 +46,7 @@ class Service {
     public function __construct() {
         $connection = Connection::getInstance()->select($this->_namespace);
         if (empty($connection)) {
-            throw new Exception('wrong connection');
+            throw new Exception('nonexisted connection');
         }
 
         if (empty($connection['host']) || !isset($connection['port']) || ($connection['port'] < 0)) {

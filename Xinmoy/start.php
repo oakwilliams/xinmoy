@@ -73,7 +73,7 @@ function start_register($config) {
         throw new Exception('wrong config');
     }
 
-    if (empty($config['register']['host']) || (!isset($config['register']['port'])) || ($config['register']['port'] < 0)) {
+    if (empty($config['register']['host']) || !isset($config['register']['port']) || ($config['register']['port'] < 0)) {
         throw new Exception('wrong host/port');
     }
 
@@ -92,7 +92,7 @@ function start_server($config) {
         throw new Exception('wrong config');
     }
 
-    if (empty($config['server']['host']) || (!isset($config['server']['port'])) || ($config['server']['port'] < 0)) {
+    if (empty($config['server']['host']) || !isset($config['server']['port']) || ($config['server']['port'] < 0)) {
         throw new Exception('wrong server host/port');
     }
 
@@ -100,7 +100,7 @@ function start_server($config) {
         throw new Exception('wrong name');
     }
 
-    if (empty($config['register']['host']) || (!isset($config['register']['port'])) || ($config['register']['port'] < 0)) {
+    if (empty($config['register']['host']) || !isset($config['register']['port']) || ($config['register']['port'] < 0)) {
         throw new Exception('wrong register host/port');
     }
 
@@ -135,7 +135,7 @@ if (empty($config['role'])) {
 
 $function = "start_{$config['role']}";
 if (!function_exists($function)) {
-    throw new Exception('wrong role');
+    throw new Exception('nonexisted role');
 }
 
 // Start.

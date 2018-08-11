@@ -214,12 +214,12 @@ class Server extends SwooleServer {
 
             $class = "{$data['namespace']}\\{$data['class']}";
             if (!class_exists($class)) {
-                throw new Exception('wrong class');
+                throw new Exception('undefined class');
             }
 
             $object = new $class();
             if (!method_exists($object, $data['method'])) {
-                throw new Exception('wrong method');
+                throw new Exception('undefined method');
             }
 
             if (!isset($data['arguments'])) {

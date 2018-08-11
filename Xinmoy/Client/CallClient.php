@@ -33,7 +33,6 @@ class CallClient extends SyncClient {
      */
     public function call($namespace, $class, $method, $arguments) {
         if (empty($namespace) || empty($class) || empty($method)) {
-            echo 'test';
             throw new Exception('wrong namespace/class/method');
         }
 

@@ -279,7 +279,7 @@ class Server {
      * @param string $type type
      * @param array  $data optional, data
      */
-    public function send($fd, $type, $data = []) {
+    public function send($fd, $type, $data = null) {
         if (($fd < 0) || empty($type)) {
             throw new Exception('wrong fd/type');
         }
@@ -323,7 +323,7 @@ class Server {
      * @param string $type  type
      * @param array  $data  optional, data
      */
-    public function sendToGroup($group, $type, $data = []) {
+    public function sendToGroup($group, $type, $data = null) {
         foreach ($this->_sendToGroup($group, $type, $data) as $i) { }
     }
 
@@ -335,7 +335,7 @@ class Server {
      * @param string $type  type
      * @param array  $data  optional, data
      */
-    protected function _sendToGroup($group, $type, $data = []) {
+    protected function _sendToGroup($group, $type, $data = null) {
         if (empty($group) || empty($type)) {
             throw new Exception('wrong group/type');
         }

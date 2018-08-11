@@ -129,20 +129,7 @@ class AsyncClient {
      * Reconnect.
      */
     protected function _reconnect() {
-        if (empty($this->_client)) {
-            throw new Exception('init failed');
-        }
-
-        if (empty($this->_host) || ($this->_port < 0)) {
-            throw new Exception('wrong host/port');
-        }
-
-        $client = $this->_client;
-        $host = $this->_host;
-        $port = $this->_port;
-        Timer::after(1000, function() use ($client, $host, $port) {
-            $client->connect($host, $port);
-        });
+        Timer::after(1000, [ $this, 'onReconnect' ]);
     }
 
 
@@ -170,6 +157,26 @@ class AsyncClient {
             }
 
             $this->_timerId = Timer::tick($this->_heartbeatCheckInterval * 1000, [ $this, 'onHeartbeatSend' ]);
+        } catch (Exception $e) {
+            handle_exception($e);
+        }
+    }
+
+
+    /**
+     * onReconnect
+     */
+    public function onReconnect() {
+        try {
+            if (empty($this->_client)) {
+                throw new Exception('init failed');
+            }
+
+            if (empty($this->_host) || ($this->_port < 0)) {
+                throw new Exception('wrong host/port');
+            }
+
+            $this->_client->connect($this->_host, $this->_port);
         } catch (Exception $e) {
             handle_exception($e);
         }
@@ -252,7 +259,7 @@ class AsyncClient {
      * @param string $type type
      * @param array  $data optional ,data
      */
-    public function send($type, $data = []) {
+    public function send($type, $data = null) {
         if (empty($type)) {
             throw new Exception('wrong type');
         }
