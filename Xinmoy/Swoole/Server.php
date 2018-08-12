@@ -177,30 +177,30 @@ class Server {
      * @param Server $server     server
      * @param int    $fd         fd
      * @param int    $reactor_id reactor id
-     * @param string $data       data
+     * @param string $message    message
      */
-    public function onReceive($server, $fd, $reactor_id, string $data) {
+    public function onReceive($server, $fd, $reactor_id, $message) {
         try {
-            Log::getInstance()->log("receive: {$data}");
-            $data = json_decode($data, true);
-            if (empty($data)) {
-                throw new Exception('wrong data');
+            Log::getInstance()->log("receive: {$message}");
+            $message = json_decode($message, true);
+            if (empty($message)) {
+                throw new Exception('wrong message');
             }
 
-            if (empty($data['type'])) {
+            if (empty($message['type'])) {
                 throw new Exception('wrong type');
             }
 
-            $method = "on{$data['type']}";
+            $method = "on{$message['type']}";
             if (!method_exists($this, $method)) {
                 return;
             }
 
-            if (!isset($data['data'])) {
-                $data['data'] = [];
+            if (!isset($message['data'])) {
+                $message['data'] = [];
             }
 
-            $this->{$method}($server, $fd, $reactor_id, $data['data']);
+            $this->{$method}($server, $fd, $reactor_id, $message['data']);
         } catch (Exception $e) {
             $this->sendError($fd, $e->getMessage());
         }

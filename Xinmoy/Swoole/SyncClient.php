@@ -124,8 +124,8 @@ class SyncClient {
             throw new Exception('init failed');
         }
 
-        $data = $this->_client->recv();
-        Log::getInstance()->log("receive: {$data}");
-        return json_decode($data, true);
+        $message = $this->_client->recv();
+        Log::getInstance()->log("receive: {$message}");
+        return json_decode($message, true);
     }
 }

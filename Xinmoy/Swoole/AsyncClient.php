@@ -186,31 +186,31 @@ class AsyncClient {
     /**
      * onReceive
      *
-     * @param Client $client client
-     * @param string $data   data
+     * @param Client $client  client
+     * @param string $message message
      */
-    public function onReceive($client, $data) {
+    public function onReceive($client, $message) {
         try {
-            Log::getInstance()->log("receive: {$data}");
-            $data = json_decode($data, true);
-            if (empty($data)) {
-                throw new Exception('wrong data');
+            Log::getInstance()->log("receive: {$message}");
+            $message = json_decode($message, true);
+            if (empty($message)) {
+                throw new Exception('wrong message');
             }
 
-            if (empty($data['type'])) {
+            if (empty($message['type'])) {
                 throw new Exception('wrong type');
             }
 
-            $method = "on{$data['type']}";
+            $method = "on{$message['type']}";
             if (!method_exists($this, $method)) {
                 return;
             }
 
-            if (!isset($data['data'])) {
-                $data['data'] = [];
+            if (!isset($message['data'])) {
+                $message['data'] = [];
             }
 
-            $this->{$method}($client, $data['data']);
+            $this->{$method}($client, $message['data']);
         } catch (Exception $e) {
             handle_exception($e);
         }
