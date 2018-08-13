@@ -78,6 +78,16 @@ class AsyncClient {
         $this->_host = $host;
         $this->_port = $port;
         $this->_client = new Client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_ASYNC);
+        $this->_client->set([
+            'open_length_check' => true,
+            'package_length_type' => 'N',
+            'package_length_offset' => 0,
+            'package_body_offset' => 4
+        ]);
+        $this->_client->on('connect', [ $this, 'onConnect' ]);
+        $this->_client->on('receive', [ $this, 'onReceive' ]);
+        $this->_client->on('error', [ $this, 'onError' ]);
+        $this->_client->on('close', [ $this, 'onClose' ]);
     }
 
 
@@ -117,10 +127,6 @@ class AsyncClient {
             throw new Exception('wrong host/port');
         }
 
-        $this->_client->on('connect', [ $this, 'onConnect' ]);
-        $this->_client->on('receive', [ $this, 'onReceive' ]);
-        $this->_client->on('error', [ $this, 'onError' ]);
-        $this->_client->on('close', [ $this, 'onClose' ]);
         $this->_client->connect($this->_host, $this->_port);
     }
 
@@ -191,6 +197,7 @@ class AsyncClient {
      */
     public function onReceive($client, $message) {
         try {
+            $message = substr($message, 4);
             Log::getInstance()->log("receive: {$message}");
             $message = json_decode($message, true);
             if (empty($message)) {
@@ -207,7 +214,7 @@ class AsyncClient {
             }
 
             if (!isset($message['data'])) {
-                $message['data'] = [];
+                $message['data'] = null;
             }
 
             $this->{$method}($client, $message['data']);
@@ -242,10 +249,7 @@ class AsyncClient {
      */
     public function onClose($client) {
         try {
-            if ($this->_timerId >= 0) {
-                Timer::clear($this->_timerId);
-            }
-
+            Timer::clear($this->_timerId);
             $this->_reconnect();
         } catch (Exception $e) {
             handle_exception($e);
@@ -272,7 +276,10 @@ class AsyncClient {
             'type' => $type,
             'data' => $data
         ]);
-        $this->_client->send($message);
+        $len = strlen($message);
+        $len = sprintf("%'08x", $len);
+        $len = hex2bin($len);
+        $this->_client->send("{$len}{$message}");
         Log::getInstance()->log("send: {$message}");
     }
 }

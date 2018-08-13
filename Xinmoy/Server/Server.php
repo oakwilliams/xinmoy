@@ -55,11 +55,11 @@ class Server extends SwooleServer {
 
 
     /*
-     * Servers
+     * Dependencies
      *
      * @property array
      */
-    protected $_servers = [];
+    protected $_dependencies = [];
 
 
     /**
@@ -116,22 +116,22 @@ class Server extends SwooleServer {
 
 
     /**
-     * Set servers.
+     * Set dependencies.
      *
-     * @param array $servers servers
+     * @param array $dependencies dependencies
      */
-    public function setServers($servers) {
-        $this->_servers = $servers;
+    public function setDependencies($dependencies) {
+        $this->_dependencies = $dependencies;
     }
 
 
     /**
-     * Get servers.
+     * Get dependencies.
      *
      * @return array
      */
-    public function getServers() {
-        return $this->_servers;
+    public function getDependencies() {
+        return $this->_dependencies;
     }
 
 
@@ -250,11 +250,11 @@ class Server extends SwooleServer {
             }
 
             if ($this->_port < 0) {
-                throw new Exception('wrong server port');
+                throw new Exception('wrong port');
             }
 
             $client = new RegistrationClient($this->_registerHost, $this->_registerPort);
-            $client->setServer($this->_name);
+            $client->setServerName($this->_name);
             $client->setServerPort($this->_port);
             $client->connect();
         } catch (Exception $e) {
@@ -276,7 +276,7 @@ class Server extends SwooleServer {
 
             $client = new DiscoveryClient($this->_registerHost, $this->_registerPort);
             $client->setProcess($process);
-            $client->setServers($this->_servers);
+            $client->setDependencies($this->_dependencies);
             $client->connect();
         } catch (Exception $e) {
             handle_exception($e);

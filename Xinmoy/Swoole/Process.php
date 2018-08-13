@@ -59,7 +59,7 @@ trait Process {
      * @param string $type type
      * @param array  $data optional, data
      */
-    public function write($type, $data = []) {
+    public function write($type, $data = null) {
         if (empty($type)) {
             throw new Exception('wrong type');
         }
@@ -103,7 +103,7 @@ trait Process {
             }
 
             if (!isset($message['data'])) {
-                $message['data'] = [];
+                $message['data'] = null;
             }
 
             $this->{$method}($message['data']);

@@ -22,11 +22,11 @@ use Xinmoy\Swoole\AsyncClient;
  */
 class RegistrationClient extends AsyncClient {
     /*
-     * Server
+     * Server Name
      *
-     * @property string $server server
+     * @property string
      */
-    protected $_server = '';
+    protected $_serverName = '';
 
 
     /*
@@ -38,40 +38,40 @@ class RegistrationClient extends AsyncClient {
 
 
     /**
-     * Set server.
+     * Set server name.
      *
-     * @param string $server server
+     * @param string $server_name server name
      */
-    public function setServer($server) {
-        if (empty($server)) {
-            throw new Exception('wrong server');
+    public function setServerName($server_name) {
+        if (empty($server_name)) {
+            throw new Exception('wrong server name');
         }
 
-        $this->_server = $server;
+        $this->_serverName = $server_name;
     }
 
 
     /**
-     * Get server.
+     * Get server name.
      *
      * @return string
      */
-    public function getServer() {
-        return $this->_server;
+    public function getServerName() {
+        return $this->_serverName;
     }
 
 
     /**
      * Set server port.
      *
-     * @param int $port optional, port
+     * @param int $server_port optional, server port
      */
-    public function setServerPort($port = 8000) {
-        if ($port < 0) {
+    public function setServerPort($server_port = 8000) {
+        if ($server_port < 0) {
             throw new Exception('wrong server port');
         }
 
-        $this->_serverPort = $port;
+        $this->_serverPort = $server_port;
     }
 
 
@@ -94,8 +94,8 @@ class RegistrationClient extends AsyncClient {
         try {
             parent::onConnect($client);
 
-            if (empty($this->_server)) {
-                throw new Exception('wrong server');
+            if (empty($this->_serverName)) {
+                throw new Exception('wrong server name');
             }
 
             if ($this->_serverPort < 0) {
@@ -103,7 +103,7 @@ class RegistrationClient extends AsyncClient {
             }
 
             $this->send('register', [
-                'server' => $this->_server,
+                'name' => $this->_serverName,
                 'port' => $this->_serverPort
             ]);
         } catch (Exception $e) {

@@ -28,11 +28,11 @@ trait Discovery {
      * @param array $data data
      */
     public function onRegister($data) {
-        if (empty($data['server']) || empty($data['host']) || !isset($data['port']) || ($data['port'] < 0)) {
-            throw new Exception('wrong server/host/port');
+        if (empty($data['name']) || empty($data['host']) || !isset($data['port']) || ($data['port'] < 0)) {
+            throw new Exception('wrong name/host/port');
         }
 
-        Connection::getInstance()->register($data['server'], $data['host'], $data['port']);
+        Connection::getInstance()->register($data['name'], $data['host'], $data['port']);
     }
 
 
@@ -42,11 +42,11 @@ trait Discovery {
      * @param array $data data
      */
     public function onUnregister($data) {
-        if (empty($data['server']) || empty($data['host']) || !isset($data['port']) || ($data['port'] < 0)) {
-            throw new Exception('wrong server/host/port');
+        if (empty($data['name']) || empty($data['host']) || !isset($data['port']) || ($data['port'] < 0)) {
+            throw new Exception('wrong name/host/port');
         }
 
-        Connection::getInstance()->unregister($data['server'], $data['host'], $data['port']);
+        Connection::getInstance()->unregister($data['name'], $data['host'], $data['port']);
     }
 
 
@@ -56,14 +56,14 @@ trait Discovery {
      * @param array $data data
      */
     public function onDiscover($data) {
-        if (empty($data['server'])) {
-            throw new Exception('wrong server');
+        if (empty($data['name'])) {
+            throw new Exception('wrong name');
         }
 
         if (!isset($data['addresses'])) {
-            $data['addresses'] = [];
+            $data['addresses'] = null;
         }
 
-        Connection::getInstance()->discover($data['server'], $data['addresses']);
+        Connection::getInstance()->discover($data['name'], $data['addresses']);
     }
 }

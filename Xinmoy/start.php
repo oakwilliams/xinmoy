@@ -20,13 +20,13 @@ use Xinmoy\Server\Server;
 /**
  * Autoload service.
  *
- * @param string $class class
+ * @param string $service service
  */
-function autoload_service($class) {
-    $class = explode('\\', $class);
-    $name = array_pop($class);
-    $namespace = join('\\', $class);
-    if (!preg_match('/^.+Service$/', $name)) {
+function autoload_service($service) {
+    $service = explode('\\', $service);
+    $class = array_pop($service);
+    $namespace = join('\\', $service);
+    if (!preg_match('/^.+Service$/', $class)) {
         return false;
     }
 
@@ -37,11 +37,11 @@ function autoload_service($class) {
         use Xinmoy\\Client\\Service;
 
 
-        class {$name} extends Service {
+        class {$class} extends Service {
             protected \$_namespace = '{$namespace}';
 
 
-            protected \$_class = '{$name}';
+            protected \$_class = '{$class}';
         }
     ";
     eval($code);
@@ -93,7 +93,7 @@ function start_server($config) {
     }
 
     if (empty($config['server']['host']) || !isset($config['server']['port']) || ($config['server']['port'] < 0)) {
-        throw new Exception('wrong server host/port');
+        throw new Exception('wrong host/port');
     }
 
     if (empty($config['server']['name'])) {
@@ -111,7 +111,7 @@ function start_server($config) {
     $server = new Server($config['server']['host'], $config['server']['port']);
     $server->setName($config['server']['name']);
     $server->setRegisterAddress($config['register']['host'], $config['register']['port']);
-    $server->setServers($config['server']['dependencies']);
+    $server->setDependencies($config['server']['dependencies']);
     $server->start();
 }
 

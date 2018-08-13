@@ -32,7 +32,7 @@ class Session {
      *
      * @property array
      */
-    protected $_sessions = [];
+    protected $_sessions = null;
 
 
     /**
@@ -65,7 +65,7 @@ class Session {
             throw new Exception('wrong fd');
         }
 
-        $this->_sessions[$fd] = [];
+        $this->_sessions[$fd] = null;
     }
 
 

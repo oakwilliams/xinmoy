@@ -35,17 +35,17 @@ class Register extends Server {
         try {
             $type = Session::getInstance()->get($fd, 'type');
             if ($type == 'server') {
-                $name = Session::getInstance()->get($fd, 'server');
+                $name = Session::getInstance()->get($fd, 'name');
                 $host = Session::getInstance()->get($fd, 'host');
                 $port = Session::getInstance()->get($fd, 'port');
 
                 if (empty($name) || empty($host) || ($port < 0)) {
-                    throw new Exception('wrong server/host/port');
+                    throw new Exception('wrong name/host/port');
                 }
 
                 ServerAddress::getInstance()->unregister($name, $fd, $host, $port);
                 $this->sendToGroup($name, 'unregister', [
-                    'server' => $name,
+                    'name' => $name,
                     'fd' => $fd,
                     'host' => $host,
                     'port' => $port
@@ -69,8 +69,8 @@ class Register extends Server {
      * @param object $data       data
      */
     public function onRegister($server, $fd, $reactor_id, $data) {
-        if (empty($data['server']) || !isset($data['port']) || ($data['port'] < 0)) {
-            throw new Exception('wrong server/port');
+        if (empty($data['name']) || !isset($data['port']) || ($data['port'] < 0)) {
+            throw new Exception('wrong name/port');
         }
 
         $connection = $server->connection_info($fd);
@@ -79,13 +79,13 @@ class Register extends Server {
         }
 
         Session::getInstance()->set($fd, 'type', 'server');
-        Session::getInstance()->set($fd, 'server', $data['server']);
+        Session::getInstance()->set($fd, 'name', $data['name']);
         Session::getInstance()->set($fd, 'host', $connection['remote_ip']);
         Session::getInstance()->set($fd, 'port', $data['port']);
-        Group::getInstance()->join($fd, $data['server']);
-        ServerAddress::getInstance()->register($data['server'], $fd, $connection['remote_ip'], $data['port']);
-        $this->sendToGroup($data['server'], 'register', [
-            'server' => $data['server'],
+        Group::getInstance()->join($fd, $data['name']);
+        ServerAddress::getInstance()->register($data['name'], $fd, $connection['remote_ip'], $data['port']);
+        $this->sendToGroup($data['name'], 'register', [
+            'name' => $data['name'],
             'fd' => $fd,
             'host' => $connection['remote_ip'],
             'port' => $data['port']
@@ -102,14 +102,14 @@ class Register extends Server {
      * @param object $data       data
      */
     public function onDiscover($server, $fd, $reactor_id, $data) {
-        if (empty($data['server'])) {
-            throw new Exception('wrong server');
+        if (empty($data['name'])) {
+            throw new Exception('wrong name');
         }
 
-        Group::getInstance()->join($fd, $data['server']);
-        $addresses = ServerAddress::getInstance()->discover($data['server']);
+        Group::getInstance()->join($fd, $data['name']);
+        $addresses = ServerAddress::getInstance()->discover($data['name']);
         $this->send($fd, 'discover', [
-            'server' => $data['server'],
+            'name' => $data['name'],
             'addresses' => $addresses
         ]);
     }

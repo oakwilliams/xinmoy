@@ -58,6 +58,12 @@ class SyncClient {
         $this->_host = $host;
         $this->_port = $port;
         $this->_client = new Client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_SYNC);
+        $this->_client->set([
+            'open_length_check' => true,
+            'package_length_type' => 'N',
+            'package_length_offset' => 0,
+            'package_body_offset' => 4
+        ]);
     }
 
 
@@ -72,7 +78,6 @@ class SyncClient {
         if (empty($this->_host) || ($this->_port < 0)) {
             throw new Exception('wrong host/port');
         }
-
 
         $this->_client->connect($this->_host, $this->_port);
     }
@@ -96,7 +101,7 @@ class SyncClient {
      * @param string $type type
      * @param array  $data optional, data
      */
-    public function send($type, $data = []) {
+    public function send($type, $data = null) {
         if (empty($this->_client)) {
             throw new Exception('init failed');
         }
@@ -109,7 +114,10 @@ class SyncClient {
             'type' => $type,
             'data' => $data
         ]);
-        $this->_client->send($message);
+        $len = strlen($message);
+        $len = sprintf("%'08x", $len);
+        $len = hex2bin($len);
+        $this->_client->send("{$len}{$message}");
         Log::getInstance()->log("send: {$message}");
     }
 
@@ -125,6 +133,7 @@ class SyncClient {
         }
 
         $message = $this->_client->recv();
+        $message = substr($message, 4);
         Log::getInstance()->log("receive: {$message}");
         return json_decode($message, true);
     }

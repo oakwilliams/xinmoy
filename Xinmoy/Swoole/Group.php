@@ -116,6 +116,10 @@ class Group {
         }
 
         $groups = $this->getGroups($fd);
+        if (empty($groups)) {
+            return;
+        }
+
         foreach ($groups as $group) {
             yield $this->leave($fd, $group);
         }
@@ -143,6 +147,10 @@ class Group {
         }
 
         $members = $this->getMembers($group);
+        if (empty($members)) {
+            return;
+        }
+
         foreach ($members as $member) {
             yield $this->leave($member, $group);
         }

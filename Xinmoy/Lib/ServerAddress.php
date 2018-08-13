@@ -32,7 +32,7 @@ class ServerAddress {
      *
      * @property array
      */
-    protected $_addresses = [];
+    protected $_addresses = null;
 
 
     /**
@@ -58,18 +58,18 @@ class ServerAddress {
     /**
      * Register.
      *
-     * @param string $server server
-     * @param int    $fd     fd
-     * @param string $host   host
-     * @param int    $port   port
+     * @param string $name name
+     * @param int    $fd   fd
+     * @param string $host host
+     * @param int    $port port
      */
-    public function register($server, $fd, $host, $port) {
-        if (empty($server) || ($fd < 0) || empty($host) || ($port < 0)) {
-            throw new Exception('wrong server/fd/host/port');
+    public function register($name, $fd, $host, $port) {
+        if (empty($name) || ($fd < 0) || empty($host) || ($port < 0)) {
+            throw new Exception('wrong name/fd/host/port');
         }
 
-        $this->_addresses[$server]["{$host}:{$port}"][$fd] = [
-            'server' => $server,
+        $this->_addresses[$name]["{$host}:{$port}"][$fd] = [
+            'name' => $name,
             'fd' => $fd,
             'host' => $host,
             'port' => $port
@@ -80,19 +80,22 @@ class ServerAddress {
     /**
      * Unregister.
      *
-     * @param string $server server
-     * @param int    $fd     fd
-     * @param string $host   host
-     * @param int    $port   port
+     * @param string $name name
+     * @param int    $fd   fd
+     * @param string $host host
+     * @param int    $port port
      */
-    public function unregister($server, $fd, $host, $port) {
-        if (empty($server) || ($fd < 0) || empty($host) || ($port < 0)) {
-            throw new Exception('wrong server/fd/host/port');
+    public function unregister($name, $fd, $host, $port) {
+        if (empty($name) || ($fd < 0) || empty($host) || ($port < 0)) {
+            throw new Exception('wrong name/fd/host/port');
         }
 
-        unset($this->_addresses[$server]["{$host}:{$port}"][$fd]);
-        if (empty($this->_addresses[$server]["{$host}:{$port}"])) {
-            unset($this->_addresses[$server]["{$host}:{$port}"]);
+        unset($this->_addresses[$name]["{$host}:{$port}"][$fd]);
+        if (empty($this->_addresses[$name]["{$host}:{$port}"])) {
+            unset($this->_addresses[$name]["{$host}:{$port}"]);
+            if (empty($this->_addresses[$name])) {
+                unset($this->_addresses[$name]);
+            }
         }
     }
 
@@ -100,69 +103,77 @@ class ServerAddress {
     /**
      * Set.
      *
-     * @param string $server    server
+     * @param string $name      name
      * @param array  $addresses addresses
      */
-    public function set($server, $addresses) {
-        if (empty($server)) {
-            throw new Exception('wrong server');
+    public function set($name, $addresses) {
+        if (empty($name)) {
+            throw new Exception('wrong name');
         }
 
-        $this->_addresses[$server] = $addresses;
+        $this->_addresses[$name] = $addresses;
     }
 
 
     /**
      * Discover.
      *
-     * @param string $server server
+     * @param string $name name
      *
      * @return array
      */
-    public function discover($server) {
-        if (empty($server)) {
-            throw new Exception('wrong server');
+    public function discover($name) {
+        if (empty($name)) {
+            throw new Exception('wrong name');
         }
 
-        return isset($this->_addresses[$server]) ? $this->_addresses[$server] : null;
+        return isset($this->_addresses[$name]) ? $this->_addresses[$name] : null;
     }
 
 
     /**
      * Has?
      *
-     * @param string $server server
-     * @param string $host   host
-     * @param int    $port   port
+     * @param string $name name
+     * @param string $host host
+     * @param int    $port port
      *
      * @return bool
      */
-    public function has($server, $host, $port) {
-        if (empty($server) || empty($host) || ($port < 0)) {
-            throw new Exception('wrong server/host/port');
+    public function has($name, $host, $port) {
+        if (empty($name) || empty($host) || ($port < 0)) {
+            throw new Exception('wrong name/host/port');
         }
 
-        return !empty($this->_addresses[$server]["{$host}:{$port}"]);
+        return !empty($this->_addresses[$name]["{$host}:{$port}"]);
     }
 
 
     /**
      * Filter.
      *
-     * @param string $server server
+     * @param string $name name
      *
      * @return array
      */
-    public function filter($server) {
-        if (empty($server)) {
-            throw new Exception('wrong server');
+    public function filter($name) {
+        if (empty($name)) {
+            throw new Exception('wrong name');
         }
 
-        $filtered = [];
-        foreach ($this->_addresses[$server] as $addresses) {
+        if (empty($this->_addresses[$name])) {
+            return null;
+        }
+
+        $filtered = null;
+        foreach ($this->_addresses[$name] as $addresses) {
+            if (empty($addresses)) {
+                continue;
+            }
+
             foreach ($addresses as $address) {
                 $filtered["{$address['host']}:{$address['port']}"] = [
-                    'server' => $address['server'],
+                    'name' => $address['name'],
                     'host' => $address['host'],
                     'port' => $address['port']
                 ];

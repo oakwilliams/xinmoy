@@ -109,6 +109,10 @@ class Server {
         }
 
         $this->_server->set([
+            'open_length_check' => true,
+            'package_length_type' => 'N',
+            'package_length_offset' => 0,
+            'package_body_offset' => 4,
             'heartbeat_idle_time' => $this->_heartbeatIdleTime
         ]);
         $this->_server->on('workerstart', [ $this, 'onWorkerStart' ]);
@@ -181,6 +185,7 @@ class Server {
      */
     public function onReceive($server, $fd, $reactor_id, $message) {
         try {
+            $message = substr($message, 4);
             Log::getInstance()->log("receive: {$message}");
             $message = json_decode($message, true);
             if (empty($message)) {
@@ -197,7 +202,7 @@ class Server {
             }
 
             if (!isset($message['data'])) {
-                $message['data'] = [];
+                $message['data'] = null;
             }
 
             $this->{$method}($server, $fd, $reactor_id, $message['data']);
@@ -266,6 +271,10 @@ class Server {
      * @param array $fds fds
      */
     protected function _closeMany($fds) {
+        if (empty($fds)) {
+            return;
+        }
+
         foreach ($fds as $fd) {
             yield $this->close($fd);
         }
@@ -292,7 +301,10 @@ class Server {
             'type' => $type,
             'data' => $data
         ]);
-        $this->_server->send($fd, $message);
+        $len = strlen($message);
+        $len = sprintf("%'08x", $len);
+        $len = hex2bin($len);
+        $this->_server->send($fd, "{$len}{$message}");
         Log::getInstance()->log("send: {$message}");
     }
 
@@ -341,6 +353,10 @@ class Server {
         }
 
         $members = Group::getInstance()->getMembers($group);
+        if (empty($members)) {
+            return;
+        }
+
         foreach ($members as $member) {
             yield $this->send($member, $type, $data);
         }

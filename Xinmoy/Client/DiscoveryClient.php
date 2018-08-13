@@ -25,30 +25,30 @@ class DiscoveryClient extends AsyncClient {
 
 
     /*
-     * Servers
+     * Dependencies
      *
      * @property array
      */
-    protected $_servers = [];
+    protected $_dependencies = [];
 
 
     /**
-     * Set servers.
+     * Set dependencies.
      *
-     * @param array $servers servers
+     * @param array $dependencies dependencies
      */
-    public function setServers($servers) {
-        $this->_servers = $servers;
+    public function setDependencies($dependencies) {
+        $this->_dependencies = $dependencies;
     }
 
 
     /**
-     * Get servers.
+     * Get dependencies.
      *
      * @return array
      */
-    public function getServers() {
-        return $this->_servers;
+    public function getDependencies() {
+        return $this->_dependencies;
     }
 
 
@@ -61,7 +61,7 @@ class DiscoveryClient extends AsyncClient {
         try {
             parent::onConnect($client);
 
-            $this->discoverMany($this->_servers);
+            $this->discoverMany($this->_dependencies);
         } catch (Exception $e) {
             handle_exception($e);
         }
@@ -75,15 +75,15 @@ class DiscoveryClient extends AsyncClient {
      * @param array  $data   data
      */
     public function onRegister($client, $data) {
-        if (empty($data['server']) || !isset($data['fd']) || ($data['fd'] < 0) || empty($data['host']) || !isset($data['port']) || ($data['port'] < 0)) {
-            throw new Exception('wrong server/fd/host/port');
+        if (empty($data['name']) || !isset($data['fd']) || ($data['fd'] < 0) || empty($data['host']) || !isset($data['port']) || ($data['port'] < 0)) {
+            throw new Exception('wrong name/fd/host/port');
         }
 
-        $has = ServerAddress::getInstance()->has($data['server'], $data['host'], $data['port']);
-        ServerAddress::getInstance()->register($data['server'], $data['fd'], $data['host'], $data['port']);
+        $has = ServerAddress::getInstance()->has($data['name'], $data['host'], $data['port']);
+        ServerAddress::getInstance()->register($data['name'], $data['fd'], $data['host'], $data['port']);
         if (empty($has)) {
             $this->write('register', [
-                'server' => $data['server'],
+                'name' => $data['name'],
                 'host' => $data['host'],
                 'port' => $data['port']
             ]);
@@ -98,15 +98,15 @@ class DiscoveryClient extends AsyncClient {
      * @param array  $data   data
      */
     public function onUnregister($client, $data) {
-        if (empty($data['server']) || !isset($data['fd']) || ($data['fd'] < 0) || empty($data['host']) || !isset($data['port']) || ($data['port'] < 0)) {
-            throw new Exception('wrong server/fd/host/port');
+        if (empty($data['name']) || !isset($data['fd']) || ($data['fd'] < 0) || empty($data['host']) || !isset($data['port']) || ($data['port'] < 0)) {
+            throw new Exception('wrong name/fd/host/port');
         }
 
-        ServerAddress::getInstance()->unregister($data['server'], $data['fd'], $data['host'], $data['port']);
-        $has = ServerAddress::getInstance()->has($data['server'], $data['host'], $data['port']);
+        ServerAddress::getInstance()->unregister($data['name'], $data['fd'], $data['host'], $data['port']);
+        $has = ServerAddress::getInstance()->has($data['name'], $data['host'], $data['port']);
         if (empty($has)) {
             $this->write('unregister', [
-                'server' => $data['server'],
+                'name' => $data['name'],
                 'host' => $data['host'],
                 'port' => $data['port']
             ]);
@@ -121,18 +121,18 @@ class DiscoveryClient extends AsyncClient {
      * @param array  $data   data
      */
     public function onDiscover($client, $data) {
-        if (empty($data['server'])) {
-            throw new Exception('wrong server');
+        if (empty($data['name'])) {
+            throw new Exception('wrong name');
         }
 
         if (!isset($data['addresses'])) {
-            $data['addresses'] = [];
+            $data['addresses'] = null;
         }
 
-        ServerAddress::getInstance()->set($data['server'], $data['addresses']);
-        $filtered = ServerAddress::getInstance()->filter($data['server']);
+        ServerAddress::getInstance()->set($data['name'], $data['addresses']);
+        $filtered = ServerAddress::getInstance()->filter($data['name']);
         $this->write('discover', [
-            'server' => $data['server'],
+            'name' => $data['name'],
             'addresses' => $filtered
         ]);
     }
@@ -141,22 +141,26 @@ class DiscoveryClient extends AsyncClient {
     /**
      * Discover many.
      *
-     * @param array $servers servers
+     * @param array $dependencies dependencies
      */
-    public function discoverMany($servers) {
-        foreach ($this->_discoverMany($servers) as $i) { }
+    public function discoverMany($dependencies) {
+        foreach ($this->_discoverMany($dependencies) as $i) { }
     }
 
 
     /*
      * Discover many.
      *
-     * @param array $servers servers
+     * @param array $dependencies dependencies
      */
-    protected function _discoverMany($servers) {
-        foreach ($servers as $server) {
+    protected function _discoverMany($dependencies) {
+        if (empty($dependencies)) {
+            return;
+        }
+
+        foreach ($dependencies as $dependency) {
             yield $this->send('discover', [
-                'server' => $server
+                'name' => $dependency
             ]);
         }
     }

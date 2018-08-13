@@ -32,7 +32,7 @@ class Connection {
      *
      * @property array
      */
-    protected $_connections = [];
+    protected $_connections = null;
 
 
     /*
@@ -40,7 +40,7 @@ class Connection {
      *
      * @property array
      */
-    protected $_currents = [];
+    protected $_currents = null;
 
 
     /**
@@ -66,17 +66,17 @@ class Connection {
     /**
      * Register
      *
-     * @param string $server server
-     * @param string $host   host
-     * @param string $port   port
+     * @param string $name name
+     * @param string $host host
+     * @param string $port port
      */
-    public function register($server, $host, $port) {
-        if (empty($server) || empty($host) || ($port < 0)) {
-            throw new Exception('wrong server/host/port');
+    public function register($name, $host, $port) {
+        if (empty($name) || empty($host) || ($port < 0)) {
+            throw new Exception('wrong name/host/port');
         }
 
-        $this->_connections[$server]["{$host}:{$port}"] = [
-            'server' => $server,
+        $this->_connections[$name]["{$host}:{$port}"] = [
+            'name' => $name,
             'host' => $host,
             'port' => $port
         ];
@@ -86,59 +86,59 @@ class Connection {
     /**
      * Unregister.
      *
-     * @param string $server server
-     * @param string $host   host
-     * @param int    $port   port
+     * @param string $name name
+     * @param string $host host
+     * @param int    $port port
      */
-    public function unregister($server, $host, $port) {
-        if (empty($server) || empty($host) || ($port < 0)) {
-            throw new Exception('wrong server/host/port');
+    public function unregister($name, $host, $port) {
+        if (empty($name) || empty($host) || ($port < 0)) {
+            throw new Exception('wrong name/host/port');
         }
 
-        unset($this->_connections[$server]["{$host}:{$port}"]);
+        unset($this->_connections[$name]["{$host}:{$port}"]);
     }
 
 
     /**
      * Discover.
      *
-     * @param string $server    server
+     * @param string $name      name
      * @param array  $addresses addresses
      */
-    public function discover($server, $addresses) {
-        if (empty($server)) {
-            throw new Exception('wrong server');
+    public function discover($name, $addresses) {
+        if (empty($name)) {
+            throw new Exception('wrong name');
         }
 
-        $this->_connections[$server] = $addresses;
+        $this->_connections[$name] = $addresses;
     }
 
 
     /**
      * Select.
      *
-     * @param string $server server
+     * @param string $name name
      *
      * @return CallClient
      */
-    public function select($server) {
-        if (empty($server)) {
-            throw new Exception('wrong server');
+    public function select($name) {
+        if (empty($name)) {
+            throw new Exception('wrong name');
         }
 
-        if (empty($this->_connections[$server])) {
-            throw new Exception('nonexisted server');
+        if (empty($this->_connections[$name])) {
+            throw new Exception('nonexisted name');
         }
 
-        if (!isset($this->_currents[$server]) || ($this->_currents[$server] < 0)) {
-            $this->_currents[$server] = 0;
+        if (!isset($this->_currents[$name]) || ($this->_currents[$name] < 0)) {
+            $this->_currents[$name] = 0;
         }
 
-        $this->_currents[$server] += 1;
-        $this->_currents[$server] %= count($this->_connections[$server]);
+        $this->_currents[$name] += 1;
+        $this->_currents[$name] %= count($this->_connections[$name]);
         $i = 0;
-        foreach ($this->_connections[$server] as $connection) {
-            if ($i == $this->_currents[$server]) {
+        foreach ($this->_connections[$name] as $connection) {
+            if ($i == $this->_currents[$name]) {
                 return $connection;
             }
 
