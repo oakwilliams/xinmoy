@@ -15,6 +15,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Xinmoy\Lib\Log;
 use Xinmoy\Register\Register;
 use Xinmoy\Server\Server;
+use Xinmoy\Server\HttpServer;
 
 
 /**
@@ -112,6 +113,35 @@ function start_server($config) {
     $server->setName($config['server']['name']);
     $server->setRegisterAddress($config['register']['host'], $config['register']['port']);
     $server->setDependencies($config['server']['dependencies']);
+    $server->start();
+}
+
+
+/**
+ * Start http server.
+ *
+ * @param array $config config
+ */
+function start_http_server($config) {
+    if (empty($config)) {
+        throw new Exception('wrong config');
+    }
+
+    if (empty($config['http_server']['host']) || !isset($config['http_server']['port']) || ($config['http_server']['port'] < 0)) {
+        throw new Exception('wrong host/port');
+    }
+
+    if (empty($config['register']['host']) || !isset($config['register']['port']) || ($config['register']['port'] < 0)) {
+        throw new Exception('wrong register host/port');
+    }
+
+    if (!isset($config['http_server']['dependencies'])) {
+        $config['http_server']['dependencies'] = [];
+    }
+
+    $server = new HttpServer($config['http_server']['host'], $config['http_server']['port']);
+    $server->setRegisterAddress($config['register']['host'], $config['register']['port']);
+    $server->setDependencies($config['http_server']['dependencies']);
     $server->start();
 }
 
