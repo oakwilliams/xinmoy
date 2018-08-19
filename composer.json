@@ -2,7 +2,7 @@
     "autoload": {
         "psr-4": {
             "Xinmoy\\": "Xinmoy/",
-            "Demo\\": "Demo/"
+            "Demo\\Service\\": "Demo/Service/"
         }
     }
 }
