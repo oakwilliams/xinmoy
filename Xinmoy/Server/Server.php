@@ -323,6 +323,10 @@ class Server extends SwooleServer {
      * @param Exception $e  exception
      */
     public function sendException($fd, $e) {
+        if ($fd < 0) {
+            throw new Exception('wrong fd');
+        }
+
         if (empty($e)) {
             $e = new Exception('system error', 1);
         }
