@@ -288,11 +288,11 @@ class Server extends SwooleServer {
      * Send result.
      *
      * @param int    $fd      fd
-     * @param int    $code    code
-     * @param string $message message
-     * @param mixed  $return  return
+     * @param int    $code    optional, code
+     * @param string $message optional, message
+     * @param mixed  $return  optional, return
      */
-    public function sendResult($fd, $code, $message, $return) {
+    public function sendResult($fd, $code = 0, $message = 'ok', $return = null) {
         if ($fd < 0) {
             throw new Exception('wrong fd');
         }
@@ -309,9 +309,9 @@ class Server extends SwooleServer {
      * Send return.
      *
      * @param int   $fd     fd
-     * @param mixed $return return
+     * @param mixed $return optional, return
      */
-    public function sendReturn($fd, $return) {
+    public function sendReturn($fd, $return = null) {
         $this->sendResult($fd, 0, 'ok', $return);
     }
 
