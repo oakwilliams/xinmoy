@@ -247,6 +247,10 @@ class Server {
      * @param int $fd fd
      */
     public function close($fd) {
+        if ($fd < 0) {
+            throw new Exception('wrong fd');
+        }
+
         if (empty($this->_server)) {
             throw new Exception('init failed');
         }

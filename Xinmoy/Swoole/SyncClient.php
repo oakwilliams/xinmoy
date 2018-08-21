@@ -102,12 +102,12 @@ class SyncClient {
      * @param array  $data optional, data
      */
     public function send($type, $data = null) {
-        if (empty($this->_client)) {
-            throw new Exception('init failed');
-        }
-
         if (empty($type)) {
             throw new Exception('wrong type');
+        }
+
+        if (empty($this->_client)) {
+            throw new Exception('init failed');
         }
 
         $message = json_encode([
