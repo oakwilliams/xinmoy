@@ -94,12 +94,8 @@ class RegistrationClient extends AsyncClient {
         try {
             parent::onConnect($client);
 
-            if (empty($this->_serverName)) {
-                throw new Exception('wrong server name');
-            }
-
-            if ($this->_serverPort < 0) {
-                throw new Exception('wrong server port');
+            if (empty($this->_serverName) || ($this->_serverPort < 0)) {
+                throw new Exception('wrong server name/port');
             }
 
             $this->send('register', [

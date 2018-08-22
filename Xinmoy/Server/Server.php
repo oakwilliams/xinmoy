@@ -245,12 +245,8 @@ class Server extends SwooleServer {
                 throw new Exception('wrong register host/port');
             }
 
-            if (empty($this->_name)) {
-                throw new Exception('wrong name');
-            }
-
-            if ($this->_port < 0) {
-                throw new Exception('wrong port');
+            if (empty($this->_name) || ($this->_port < 0)) {
+                throw new Exception('wrong name/port');
             }
 
             $client = new RegistrationClient($this->_registerHost, $this->_registerPort);

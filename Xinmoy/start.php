@@ -93,12 +93,8 @@ function start_server($config) {
         throw new Exception('wrong config');
     }
 
-    if (empty($config['server']['host']) || !isset($config['server']['port']) || ($config['server']['port'] < 0)) {
-        throw new Exception('wrong host/port');
-    }
-
-    if (empty($config['server']['name'])) {
-        throw new Exception('wrong name');
+    if (empty($config['server']['name']) || empty($config['server']['host']) || !isset($config['server']['port']) || ($config['server']['port'] < 0)) {
+        throw new Exception('wrong name/host/port');
     }
 
     if (empty($config['register']['host']) || !isset($config['register']['port']) || ($config['register']['port'] < 0)) {
