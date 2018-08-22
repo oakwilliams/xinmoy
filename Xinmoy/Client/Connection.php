@@ -134,7 +134,7 @@ class Connection {
             $this->_currents[$name] = 0;
         }
 
-        $this->_currents[$name] += 1;
+        $this->_currents[$name]++;
         $this->_currents[$name] %= count($this->_connections[$name]);
         $i = 0;
         foreach ($this->_connections[$name] as $connection) {
