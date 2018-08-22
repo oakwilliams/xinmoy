@@ -14,11 +14,13 @@ namespace Demo\Service;
 
 use Exception;
 
+use Xinmoy\Base\BaseService;
+
 
 /**
  * Demo Service
  */
-class DemoService {
+class DemoService extends BaseService {
     /**
      * Test.
      *

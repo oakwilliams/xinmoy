@@ -14,13 +14,15 @@ namespace Demo\Controller;
 
 use Exception;
 
+use Xinmoy\Base\BaseController;
+
 use Demo\Service\DemoService;
 
 
 /**
  * Demo Controller
  */
-class DemoController {
+class DemoController extends BaseController {
     /**
      * Test.
      *
