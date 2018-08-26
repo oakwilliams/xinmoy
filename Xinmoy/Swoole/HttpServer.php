@@ -129,6 +129,7 @@ class HttpServer {
                 throw new Exception('wrong method');
             }
 
+            $cookie = null;
             $return = $object->{$path_info[3]}($data, $request->cookie, $cookie);
             $this->respondCookie($response, $cookie);
             $this->respondReturn($response, $return);
