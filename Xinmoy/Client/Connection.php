@@ -131,7 +131,7 @@ class Connection {
         }
 
         if (!isset($this->_currents[$name]) || ($this->_currents[$name] < 0)) {
-            $this->_currents[$name] = 0;
+            $this->_currents[$name] = -1;
         }
 
         $this->_currents[$name]++;
