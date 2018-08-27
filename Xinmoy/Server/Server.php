@@ -21,6 +21,7 @@ use Xinmoy\Swoole\Server as SwooleServer;
 use Xinmoy\Client\RegistrationClient;
 use Xinmoy\Client\DiscoveryClient;
 use Xinmoy\Client\Discovery;
+use Xinmoy\Client\MySQLConnection;
 
 
 /**
@@ -60,6 +61,22 @@ class Server extends SwooleServer {
      * @property array
      */
     protected $_dependencies = [];
+
+
+    /*
+     * Master
+     *
+     * @property array
+     */
+    protected $_master = null;
+
+
+    /*
+     * Slaves
+     *
+     * @property array
+     */
+    protected $_slaves = [];
 
 
     /**
@@ -136,11 +153,52 @@ class Server extends SwooleServer {
 
 
     /**
+     * Set master.
+     *
+     * @param array $master master
+     */
+    public function setMaster($master) {
+        $this->_master = $master;
+    }
+
+
+    /**
+     * Get master.
+     *
+     * @return array
+     */
+    public function getMaster() {
+        return $this->_master;
+    }
+
+
+    /**
+     * Set slaves.
+     *
+     * @param array $slaves slaves
+     */
+    public function setSlaves($slaves) {
+        $this->_slaves = $slaves;
+    }
+
+
+    /**
+     * Get slaves.
+     *
+     * @return array
+     */
+    public function getSlaves() {
+        return $this->_slaves;
+    }
+
+
+    /**
      * Start.
      */
     public function start() {
         $this->_addRegistrationProcess();
         $this->_addDiscoveryProcess();
+        $this->_addMySQLConnections();
 
         parent::start();
     }
@@ -170,6 +228,15 @@ class Server extends SwooleServer {
         $process = new Process([ $this, 'onDiscoveryProcessAdd' ]);
         $this->setProcess($process);
         $this->_server->addProcess($process);
+    }
+
+
+    /**
+     * Add MySQL connections.
+     */
+    public function _addMySQLConnections() {
+        MySQLConnection::getInstance()->setMaster($this->_master);
+        MySQLConnection::getInstance()->setSlaves($this->_slaves);
     }
 
 

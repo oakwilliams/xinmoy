@@ -100,10 +100,26 @@ function start_server($config) {
         $config['server']['dependencies'] = [];
     }
 
+    $databases = file_get_contents(__DIR__ . '/../databases.json');
+    $databases = json_decode($databases, true);
+    if (empty($databases)) {
+        $databases = null;
+    }
+
+    if (!isset($databases['master'])) {
+        $databases['master'] = null;
+    }
+
+    if (!isset($databases['slaves'])) {
+        $databases['slaves'] = [];
+    }
+
     $server = new Server($config['server']['host'], $config['server']['port']);
     $server->setName($config['server']['name']);
     $server->setRegisterAddress($config['register']['host'], $config['register']['port']);
     $server->setDependencies($config['server']['dependencies']);
+    $server->setMaster($databases['master']);
+    $server->setSlaves($databases['slaves']);
     $server->start();
 }
 

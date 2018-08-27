@@ -16,6 +16,8 @@ use Exception;
 
 use Xinmoy\Base\BaseService;
 
+use Demo\Model\GreetingModel;
+
 
 /**
  * Demo Service
@@ -35,5 +37,87 @@ class DemoService extends BaseService {
         }
 
         return "{$hello}, {$world}!";
+    }
+
+
+    /**
+     * Select.
+     *
+     * @param int    $id     id
+     * @param string $fields optional, fields
+     *
+     * @return array
+     */
+    public function selectGreeting($id, $fields = '*') {
+        $greeting_model = new GreetingModel();
+        return $greeting_model->select($id, $fields);
+    }
+
+
+    /**
+     * Insert a greeting.
+     *
+     * @param array $greeting greeting
+     *
+     * @return int
+     */
+    public function insertGreeting($greeting) {
+        $greeting_model = new GreetingModel();
+        return $greeting_model->insert($greeting);
+    }
+
+
+    /**
+     * Update a greeting.
+     *
+     * @param int   $id       id
+     * @param array $greeting greeting
+     *
+     * @return int
+     */
+    public function updateGreeting($id, $greeting) {
+        $greeting_model = new GreetingModel();
+        return $greeting_model->update($id, $greeting);
+    }
+
+
+    /**
+     * Delete a greeting.
+     *
+     * @param int $id id
+     *
+     * @return int
+     */
+    public function deleteGreeting($id) {
+        $greeting_model = new GreetingModel();
+        return $greeting_model->delete($id);
+    }
+
+
+    /**
+     * Switch a greeting.
+     *
+     * @param int $id id
+     */
+    public function switchGreeting($id) {
+        // Select a greeting.
+        $greeting_model = new GreetingModel();
+        $greeting_model->setMode(GreetingModel::MASTER);
+        $greeting = $greeting_model->select($id, 'hello, world');
+        if (empty($greeting)) {
+            throw new Exception('wrong greeting');
+        }
+
+        // Update a greeting.
+        $greeting_model->transact(function() use ($greeting_model, $id, $greeting) {
+            $greeting_model->transact(function() use ($greeting_model, $id, $greeting) {
+                $greeting_model->update($id, [
+                    'hello' => $greeting['world']
+                ]);
+                $greeting_model->update($id, [
+                    'world' => $greeting['hello']
+                ]);
+            });
+        });
     }
 }
