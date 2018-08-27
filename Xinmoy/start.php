@@ -38,12 +38,7 @@ function autoload_service($service) {
         use Xinmoy\\Client\\Service;
 
 
-        class {$class} extends Service {
-            protected \$_namespace = '{$namespace}';
-
-
-            protected \$_class = '{$class}';
-        }
+        class {$class} extends Service { }
     ";
     eval($code);
     return true;

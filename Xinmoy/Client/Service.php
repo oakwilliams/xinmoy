@@ -44,6 +44,13 @@ class Service {
      * Construct.
      */
     public function __construct() {
+        // Namespace/Class
+        $service = get_called_class();
+        $service = explode('\\', $service);
+        $this->_class = array_pop($service);
+        $this->_namespace = join('\\', $service);
+
+        // Client
         $connection = Connection::getInstance()->select($this->_namespace);
         if (empty($connection)) {
             throw new Exception('nonexisted connection');
@@ -81,6 +88,10 @@ class Service {
     public function __call($method, $arguments) {
         if (empty($this->_client)) {
             throw new Exception('client init failed');
+        }
+
+        if (empty($this->_namespace) || empty($this->_class)) {
+            throw new Exception('wrong namespace/class');
         }
 
         return $this->_client->call($this->_namespace, $this->_class, $method, $arguments);
