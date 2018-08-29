@@ -118,8 +118,8 @@ function start_server($config) {
     $server->setName($config['server']['name']);
     $server->setRegisterAddress($config['register']['host'], $config['register']['port']);
     $server->setDependencies($config['server']['dependencies']);
-    $server->setMaster($databases['master']);
-    $server->setSlaves($databases['slaves']);
+    $server->setMySQLMaster($databases['master']);
+    $server->setMySQLSlaves($databases['slaves']);
     $server->start();
 }
 

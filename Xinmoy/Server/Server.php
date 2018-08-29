@@ -64,19 +64,19 @@ class Server extends SwooleServer {
 
 
     /*
-     * Master
+     * MySQL Master
      *
      * @property array
      */
-    protected $_master = null;
+    protected $_mysqlMaster = null;
 
 
     /*
-     * Slaves
+     * MySQL Slaves
      *
      * @property array
      */
-    protected $_slaves = [];
+    protected $_mysqlSlaves = [];
 
 
     /**
@@ -153,42 +153,42 @@ class Server extends SwooleServer {
 
 
     /**
-     * Set master.
+     * Set MySQL master.
      *
      * @param array $master master
      */
-    public function setMaster($master) {
-        $this->_master = $master;
+    public function setMySQLMaster($master) {
+        $this->_mysqlMaster = $master;
     }
 
 
     /**
-     * Get master.
+     * Get MySQL master.
      *
      * @return array
      */
-    public function getMaster() {
-        return $this->_master;
+    public function getMySQLMaster() {
+        return $this->_mysqlMaster;
     }
 
 
     /**
-     * Set slaves.
+     * Set MySQL slaves.
      *
      * @param array $slaves slaves
      */
-    public function setSlaves($slaves) {
-        $this->_slaves = $slaves;
+    public function setMySQLSlaves($slaves) {
+        $this->_mysqlSlaves = $slaves;
     }
 
 
     /**
-     * Get slaves.
+     * Get MySQL slaves.
      *
      * @return array
      */
-    public function getSlaves() {
-        return $this->_slaves;
+    public function getMySQLSlaves() {
+        return $this->_mysqlSlaves;
     }
 
 
@@ -235,8 +235,8 @@ class Server extends SwooleServer {
      * Add MySQL connections.
      */
     public function _addMySQLConnections() {
-        MySQLConnection::getInstance()->setMaster($this->_master);
-        MySQLConnection::getInstance()->setSlaves($this->_slaves);
+        MySQLConnection::getInstance()->setMaster($this->_mysqlMaster);
+        MySQLConnection::getInstance()->setSlaves($this->_mysqlSlaves);
     }
 
 
