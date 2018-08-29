@@ -114,12 +114,28 @@ function start_server($config) {
         $databases['slaves'] = [];
     }
 
+    $caches = file_get_contents(__DIR__ . '/../caches.json');
+    $caches = json_decode($caches, true);
+    if (empty($caches)) {
+        $caches = null;
+    }
+
+    if (!isset($caches['master'])) {
+        $caches['master'] = null;
+    }
+
+    if (!isset($caches['slaves'])) {
+        $caches['slaves'] = [];
+    }
+
     $server = new Server($config['server']['host'], $config['server']['port']);
     $server->setName($config['server']['name']);
     $server->setRegisterAddress($config['register']['host'], $config['register']['port']);
     $server->setDependencies($config['server']['dependencies']);
     $server->setMySQLMaster($databases['master']);
     $server->setMySQLSlaves($databases['slaves']);
+    $server->setRedisMaster($caches['master']);
+    $server->setRedisSlaves($caches['slaves']);
     $server->start();
 }
 

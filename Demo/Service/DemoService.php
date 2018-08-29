@@ -17,6 +17,7 @@ use Exception;
 use Xinmoy\Base\BaseService;
 
 use Demo\Model\GreetingModel;
+use Demo\Cache\DemoCache;
 
 
 /**
@@ -119,5 +120,40 @@ class DemoService extends BaseService {
                 ]);
             });
         });
+    }
+
+
+    /**
+     * Set.
+     *
+     * @param string $demo demo
+     *
+     * @return bool
+     */
+    public function set($demo) {
+        $demo_cache = new DemoCache();
+        $demo_cache->set($demo);
+    }
+
+
+    /**
+     * Get.
+     *
+     * @return string
+     */
+    public function get() {
+        $demo_cache = new DemoCache();
+        return $demo_cache->get();
+    }
+
+
+    /**
+     * Triple.
+     */
+    public function triple() {
+        $demo_cache = new DemoCache();
+        $demo_cache->setMode(DemoCache::MASTER);
+        $demo = $demo_cache->get();
+        $demo_cache->set("{$demo}{$demo}{$demo}");
     }
 }

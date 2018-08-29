@@ -1,0 +1,13 @@
+{
+    "master": {
+        "host": "127.0.0.1",
+        "port": 6379,
+        "password": "demo"
+    },
+    "slaves": [
+        {
+            "host": "127.0.0.1",
+            "port": 6379
+        }
+    ]
+}

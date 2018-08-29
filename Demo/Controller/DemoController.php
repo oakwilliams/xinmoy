@@ -142,4 +142,50 @@ class DemoController extends BaseController {
         $demo_service = new DemoService();
         $demo_service->switchGreeting($data['id']);
     }
+
+
+    /**
+     * Set.
+     *
+     * @param array $data data
+     *
+     * @return array
+     */
+    public function set($data) {
+        if (empty($data['demo'])) {
+            throw new Exception('wrong demo', 2);
+        }
+
+        $demo_service = new DemoService();
+        $demo_service->set($data['demo']);
+    }
+
+
+    /**
+     * Get.
+     *
+     * @param array $data data
+     *
+     * @return array
+     */
+    public function get($data) {
+        $demo_service = new DemoService();
+        $demo = $demo_service->get();
+        return [
+            'demo' => $demo
+        ];
+    }
+
+
+    /**
+     * Triple.
+     *
+     * @param array $data data
+     *
+     * @return array
+     */
+    public function triple($data) {
+        $demo_service = new DemoService();
+        $demo_service->triple();
+    }
 }

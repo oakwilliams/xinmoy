@@ -3,7 +3,8 @@
         "psr-4": {
             "Xinmoy\\": "Xinmoy/",
             "Demo\\Service\\": "Demo/Service/",
-            "Demo\\Model\\": "Demo/Model/"
+            "Demo\\Model\\": "Demo/Model/",
+            "Demo\\Cache\\": "Demo/Cache/"
         }
     }
 }

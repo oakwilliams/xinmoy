@@ -22,6 +22,7 @@ use Xinmoy\Client\RegistrationClient;
 use Xinmoy\Client\DiscoveryClient;
 use Xinmoy\Client\Discovery;
 use Xinmoy\Client\MySQLConnection;
+use Xinmoy\Client\RedisConnection;
 
 
 /**
@@ -77,6 +78,22 @@ class Server extends SwooleServer {
      * @property array
      */
     protected $_mysqlSlaves = [];
+
+
+    /*
+     * Redis Master
+     *
+     * @property array
+     */
+    protected $_redisMaster = null;
+
+
+    /*
+     * Redis Slaves
+     *
+     * @property array
+     */
+    protected $_redisSlaves = [];
 
 
     /**
@@ -193,12 +210,53 @@ class Server extends SwooleServer {
 
 
     /**
+     * Set Redis master.
+     *
+     * @param array $master master
+     */
+    public function setRedisMaster($master) {
+        $this->_redisMaster = $master;
+    }
+
+
+    /**
+     * Get Redis master.
+     *
+     * @return array
+     */
+    public function getRedisMaster() {
+        return $this->_redisMaster;
+    }
+
+
+    /**
+     * Set Redis slaves.
+     *
+     * @param array $slaves slaves
+     */
+    public function setRedisSlaves($slaves) {
+        $this->_redisSlaves = $slaves;
+    }
+
+
+    /**
+     * Get Redis slaves.
+     *
+     * @return array
+     */
+    public function getRedisSlaves() {
+        return $this->_redisSlaves;
+    }
+
+
+    /**
      * Start.
      */
     public function start() {
         $this->_addRegistrationProcess();
         $this->_addDiscoveryProcess();
         $this->_addMySQLConnections();
+        $this->_addRedisConnections();
 
         parent::start();
     }
@@ -237,6 +295,15 @@ class Server extends SwooleServer {
     public function _addMySQLConnections() {
         MySQLConnection::getInstance()->setMaster($this->_mysqlMaster);
         MySQLConnection::getInstance()->setSlaves($this->_mysqlSlaves);
+    }
+
+
+    /**
+     * Add Redis connections.
+     */
+    public function _addRedisConnections() {
+        RedisConnection::getInstance()->setMaster($this->_redisMaster);
+        RedisConnection::getInstance()->setSlaves($this->_redisSlaves);
     }
 
 
