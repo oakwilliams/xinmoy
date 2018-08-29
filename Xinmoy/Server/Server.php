@@ -360,7 +360,7 @@ class Server extends SwooleServer {
                 $data['arguments'] = [];
             }
 
-            $return = call_user_func_array([ $object, $data['method'] ], $data['arguments']);
+            $return = $object->{$data['method']}(...$data['arguments']);
             $this->sendReturn($fd, $return);
         } catch (Exception $e) {
             $this->sendException($fd, $e);
