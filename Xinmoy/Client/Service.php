@@ -44,13 +44,10 @@ class Service {
      * Construct.
      */
     public function __construct() {
-        // Namespace/Class
         $service = get_called_class();
         $service = explode('\\', $service);
         $this->_class = array_pop($service);
         $this->_namespace = join('\\', $service);
-
-        // Client
         $connection = Connection::getInstance()->select($this->_namespace);
         if (empty($connection)) {
             throw new Exception('nonexisted connection');

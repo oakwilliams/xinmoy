@@ -61,7 +61,7 @@ class AsyncClient {
      *
      * @property int
      */
-    protected $_heartbeatCheckInterval = 10;
+    protected $_heartbeatCheckInterval = 0;
 
 
     /**
@@ -88,6 +88,7 @@ class AsyncClient {
         $this->_client->on('receive', [ $this, 'onReceive' ]);
         $this->_client->on('error', [ $this, 'onError' ]);
         $this->_client->on('close', [ $this, 'onClose' ]);
+        $this->setHeartbeatCheckInterval(10);
     }
 
 

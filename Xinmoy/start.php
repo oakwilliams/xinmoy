@@ -84,6 +84,7 @@ function start_register($config) {
  * @param array $config config
  */
 function start_server($config) {
+    // Config
     if (empty($config)) {
         throw new Exception('wrong config');
     }
@@ -100,6 +101,7 @@ function start_server($config) {
         $config['server']['dependencies'] = [];
     }
 
+    // Databases
     $databases = file_get_contents(__DIR__ . '/../databases.json');
     $databases = json_decode($databases, true);
     if (empty($databases)) {
@@ -114,6 +116,7 @@ function start_server($config) {
         $databases['slaves'] = [];
     }
 
+    // Caches
     $caches = file_get_contents(__DIR__ . '/../caches.json');
     $caches = json_decode($caches, true);
     if (empty($caches)) {
@@ -128,6 +131,7 @@ function start_server($config) {
         $caches['slaves'] = [];
     }
 
+    // Start server.
     $server = new Server($config['server']['host'], $config['server']['port']);
     $server->setName($config['server']['name']);
     $server->setRegisterAddress($config['register']['host'], $config['register']['port']);

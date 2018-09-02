@@ -55,7 +55,8 @@ class Register extends Server {
 
             parent::onClose($server, $fd, $reactor_id);
         } catch (Exception $e) {
-            $this->sendError($fd, $e->getMessage());
+            $message = $e->getMessage();
+            $this->sendError($fd, $message);
         }
     }
 

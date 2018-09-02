@@ -32,7 +32,7 @@ class Group {
      *
      * @property array
      */
-    protected $_members = [];
+    protected $_members = null;
 
 
     /*
@@ -40,7 +40,7 @@ class Group {
      *
      * @property array
      */
-    protected $_groups = [];
+    protected $_groups = null;
 
 
     /**

@@ -52,7 +52,7 @@ class Server {
      *
      * @property int
      */
-    protected $_heartbeatIdleTime = 20;
+    protected $_heartbeatIdleTime = 0;
 
 
     /**
@@ -69,6 +69,7 @@ class Server {
         $this->_host = $host;
         $this->_port = $port;
         $this->_server = new SwooleServer($host, $port, SWOOLE_BASE, SWOOLE_SOCK_TCP);
+        $this->setHeartbeatIdleTime(20);
     }
 
 
@@ -170,7 +171,8 @@ class Server {
         try {
             Session::getInstance()->create($fd);
         } catch (Exception $e) {
-            $this->sendError($fd, $e->getMessage());
+            $message = $e->getMessage();
+            $this->sendError($fd, $message);
         }
     }
 
@@ -207,7 +209,8 @@ class Server {
 
             $this->{$method}($server, $fd, $reactor_id, $message['data']);
         } catch (Exception $e) {
-            $this->sendError($fd, $e->getMessage());
+            $message = $e->getMessage();
+            $this->sendError($fd, $message);
         }
     }
 
@@ -223,7 +226,8 @@ class Server {
         try {
             Session::getInstance()->destroy($fd);
         } catch (Exception $e) {
-            $this->sendError($fd, $e->getMessage());
+            $message = $e->getMessage();
+            $this->sendError($fd, $message);
         }
     }
 
