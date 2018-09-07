@@ -51,5 +51,9 @@ class DemoController extends BaseController {
     }
 }
 ```
+## Test
+```
+http://172.17.0.4/Demo/Demo/test
+```
 ## Documentation
 For more information, please visit [Wiki](https://github.com/oakwilliams/xinmoy/wiki).
