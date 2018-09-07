@@ -1,7 +1,7 @@
 # Xinmoy
 Microservice Framework Based on Swoole
-## Architecture
-![](https://github.com/oakwilliams/xinmoy/wiki/Xinmoy.jpg)
+## App
+![](https://github.com/oakwilliams/xinmoy/wiki/Xinmoy%20App.jpg)
 ## DemoService
 ```
 <?php
