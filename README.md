@@ -1,6 +1,7 @@
 # Xinmoy
 Microservice Framework Based on Swoole
-
+## Architecture
+![](https://github.com/oakwilliams/xinmoy/wiki/Xinmoy.jpg)
 ## DemoService
 ```
 <?php
@@ -50,5 +51,5 @@ class DemoController extends BaseController {
     }
 }
 ```
-# Documentation
+## Documentation
 For more information, please visit [Wiki](https://github.com/oakwilliams/xinmoy/wiki).
