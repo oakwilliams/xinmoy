@@ -1,7 +1,7 @@
 # Xinmoy
 Microservice Framework Based on Swoole
 ## Features
-* Call remotely as if on local.
+* **Call remotely as if on local.**
 * It supports MySQL master/slave architecture.
 * It supports Redis master/slave architecture.
 ## Xinmoy App
