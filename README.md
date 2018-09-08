@@ -1,5 +1,8 @@
 # Xinmoy
 Microservice Framework Based on Swoole
+## Features
+* It supports MySQL master/slave architecture.
+* It supports Redis master/slave architecture.
 ## Xinmoy App
 ![](https://github.com/oakwilliams/xinmoy/wiki/Xinmoy%20App.jpg)
 ## DemoService
