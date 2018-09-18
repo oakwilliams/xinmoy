@@ -54,7 +54,13 @@ class Log {
             return;
         }
 
+        $dir = __DIR__ . "/../../logs";
+        if (!file_exists($dir)) {
+            mkdir($dir);
+        }
+
+        $today = date('Y-m-d');
         $now = date('Y-m-d H:i:s');
-        echo "[ {$now} ] {$message}\n";
+        file_put_contents("{$dir}/{$today}.log", "[ {$now} ] {$message}\n", FILE_APPEND);
     }
 }
