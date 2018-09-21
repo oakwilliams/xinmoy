@@ -18,6 +18,7 @@ use Xinmoy\Base\BaseService;
 
 use Demo\Model\GreetingModel;
 use Demo\Cache\DemoCache;
+use Demo\Http\DemoHttp;
 
 
 /**
@@ -155,5 +156,31 @@ class DemoService extends BaseService {
         $demo_cache->setMode(DemoCache::MASTER);
         $demo = $demo_cache->get();
         $demo_cache->set("{$demo}{$demo}{$demo}");
+    }
+
+
+    /**
+     * Test get.
+     *
+     * @param array $data data
+     *
+     * @return array
+     */
+    public function testGet($data) {
+        $demo_http = new DemoHttp();
+        return $demo_http->testGet($data);
+    }
+
+
+    /**
+     * Test post.
+     *
+     * @param array $data data
+     *
+     * @return array
+     */
+    public function testPost($data) {
+        $demo_http = new DemoHttp();
+        return $demo_http->testPost($data);
     }
 }

@@ -188,4 +188,30 @@ class DemoController extends BaseController {
         $demo_service = new DemoService();
         $demo_service->triple();
     }
+
+
+    /**
+     * Test get.
+     *
+     * @param array $data data
+     *
+     * @return array
+     */
+    public function testGet($data) {
+        $demo_service = new DemoService();
+        return $demo_service->testGet($data);
+    }
+
+
+    /**
+     * Test post.
+     *
+     * @param array $data data
+     *
+     * @return array
+     */
+    public function testPost($data) {
+        $demo_service = new DemoService();
+        return $demo_service->testPost($data);
+    }
 }

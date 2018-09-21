@@ -110,6 +110,7 @@ class HttpServer {
             }
 
             Log::getInstance()->log('request: ' . json_encode([
+                'request_method' => $request->server['request_method'],
                 'path_info' => $request->server['path_info'],
                 'cookie' => $request->cookie,
                 'data' => $data

@@ -4,7 +4,8 @@
             "Xinmoy\\": "Xinmoy/",
             "Demo\\Service\\": "Demo/Service/",
             "Demo\\Model\\": "Demo/Model/",
-            "Demo\\Cache\\": "Demo/Cache/"
+            "Demo\\Cache\\": "Demo/Cache/",
+            "Demo\\Http\\": "Demo/Http/"
         }
     }
 }

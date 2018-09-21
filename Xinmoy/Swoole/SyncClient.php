@@ -79,7 +79,7 @@ class SyncClient {
             throw new Exception('wrong host/port');
         }
 
-        $this->_client->connect($this->_host, $this->_port);
+        $this->_client->connect($this->_host, $this->_port, 1);
     }
 
 
