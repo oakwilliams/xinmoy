@@ -4,6 +4,7 @@ Microservice Framework Based on Swoole
 * **Call remotely as if on local.**
 * It supports MySQL master/slave architecture.
 * It supports Redis master/slave architecture.
+* It supports CURL.
 ## Xinmoy App
 ![](https://github.com/oakwilliams/xinmoy/wiki/Xinmoy%20App.jpg)
 ## DemoService
