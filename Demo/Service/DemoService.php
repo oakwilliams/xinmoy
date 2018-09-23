@@ -43,6 +43,20 @@ class DemoService extends BaseService {
 
 
     /**
+     * Test static.
+     *
+     * @param string $hello hello
+     * @param string $world world
+     *
+     * @return string
+     */
+    public static function testStatic($hello, $world) {
+        $demo_service = new static();
+        return $demo_service->test($hello, $world);
+    }
+
+
+    /**
      * Select.
      *
      * @param int    $id     id

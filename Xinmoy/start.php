@@ -19,15 +19,15 @@ use Xinmoy\Server\HttpServer;
 
 
 /**
- * Autoload service.
+ * Autoload.
  *
- * @param string $service service
+ * @param string $class class
  */
-function autoload_service($service) {
-    $service = explode('\\', $service);
-    $class = array_pop($service);
-    $namespace = join('\\', $service);
-    if (!preg_match('/^.+Service$/', $class)) {
+function autoload($class) {
+    $class = explode('\\', $class);
+    $classname = array_pop($class);
+    $namespace = join('\\', $class);
+    if (!preg_match('/^.+(Service|Config|Error|Lang)$/', $classname)) {
         return false;
     }
 
@@ -35,10 +35,10 @@ function autoload_service($service) {
         namespace {$namespace};
 
 
-        use Xinmoy\\Client\\Service;
+        use Xinmoy\\Client\\Proxy;
 
 
-        class {$class} extends Service { }
+        class {$classname} extends Proxy { }
     ";
     eval($code);
     return true;
@@ -173,8 +173,8 @@ function start_http_server($config) {
 }
 
 
-// Register service autoload.
-spl_autoload_register('autoload_service');
+// Register autoload.
+spl_autoload_register('autoload');
 
 // Set exception handler.
 set_exception_handler('handle_exception');

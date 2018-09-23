@@ -57,7 +57,7 @@ class Server extends SwooleServer {
             }
 
             $class = "{$data['namespace']}\\{$data['class']}";
-            if (!class_exists($class)) {
+            if (!$this->classExists($class)) {
                 throw new Exception('undefined class');
             }
 
@@ -71,10 +71,58 @@ class Server extends SwooleServer {
             }
 
             $return = $object->{$data['method']}(...$data['arguments']);
-            $this->sendReturn($fd, $return);
+            $this->sendReturn($fd, 'call', $return);
         } catch (Exception $e) {
-            $this->sendException($fd, $e);
+            $this->sendException($fd, 'call', $e);
         }
+    }
+
+
+    /**
+     * onCallStatic
+     *
+     * @param Server $server     server
+     * @param int    $fd         fd
+     * @param int    $reactor_id reactor id
+     * @param object $data       data
+     */
+    public function onCallStatic($server, $fd, $reactor_id, $data) {
+        try {
+            if (empty($data['namespace']) || empty($data['class']) || empty($data['method'])) {
+                throw new Exception('wrong namespace/class/method');
+            }
+
+            $class = "{$data['namespace']}\\{$data['class']}";
+            if (!$this->classExists($class)) {
+                throw new Exception('undefined class');
+            }
+
+            if (!isset($data['arguments'])) {
+                $data['arguments'] = [];
+            }
+
+            $return = $class::{$data['method']}(...$data['arguments']);
+            $this->sendReturn($fd, 'callstatic', $return);
+        } catch (Exception $e) {
+            $this->sendException($fd, 'callstatic', $e);
+        }
+    }
+
+
+    /*
+     * Class exists?
+     *
+     * @param string $class class
+     *
+     * @return bool
+     */
+    protected function classExists($class) {
+        if (empty($class)) {
+            throw new Exception('wrong class');
+        }
+
+        $class = preg_replace('/\\\\/', '/', $class);
+        return file_exists(__DIR__ . "/../../{$class}.php");
     }
 
 
@@ -82,16 +130,17 @@ class Server extends SwooleServer {
      * Send result.
      *
      * @param int    $fd      fd
+     * @param string $type    type
      * @param int    $code    optional, code
      * @param string $message optional, message
      * @param mixed  $return  optional, return
      */
-    public function sendResult($fd, $code = 0, $message = 'ok', $return = null) {
-        if ($fd < 0) {
-            throw new Exception('wrong fd');
+    public function sendResult($fd, $type, $code = 0, $message = 'ok', $return = null) {
+        if (($fd < 0) || empty($type)) {
+            throw new Exception('wrong fd/type');
         }
 
-        $this->send($fd, 'call', [
+        $this->send($fd, $type, [
             'code' => $code,
             'message' => $message,
             'data' => $return
@@ -102,23 +151,25 @@ class Server extends SwooleServer {
     /**
      * Send return.
      *
-     * @param int   $fd     fd
-     * @param mixed $return optional, return
+     * @param int    $fd     fd
+     * @param string $type   type
+     * @param mixed  $return optional, return
      */
-    public function sendReturn($fd, $return = null) {
-        $this->sendResult($fd, 0, 'ok', $return);
+    public function sendReturn($fd, $type, $return = null) {
+        $this->sendResult($fd, $type, 0, 'ok', $return);
     }
 
 
     /**
      * Send exception.
      *
-     * @param int       $fd fd
-     * @param Exception $e  exception
+     * @param int       $fd   fd
+     * @param string    $type type
+     * @param Exception $e    exception
      */
-    public function sendException($fd, $e) {
-        if ($fd < 0) {
-            throw new Exception('wrong fd');
+    public function sendException($fd, $type, $e) {
+        if (($fd < 0) || empty($type)) {
+            throw new Exception('wrong fd/type');
         }
 
         if (empty($e)) {
@@ -132,6 +183,6 @@ class Server extends SwooleServer {
             $code = 1;
         }
 
-        $this->sendResult($fd, $code, $message, null);
+        $this->sendResult($fd, $type, $code, $message, null);
     }
 }

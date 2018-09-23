@@ -21,7 +21,7 @@ use Xinmoy\Swoole\SyncClient;
  * Call Client
  */
 class CallClient extends SyncClient {
-    /*
+    /**
      * Call.
      *
      * @param string $namespace
@@ -32,11 +32,42 @@ class CallClient extends SyncClient {
      * @return mixed
      */
     public function call($namespace, $class, $method, $arguments) {
-        if (empty($namespace) || empty($class) || empty($method)) {
-            throw new Exception('wrong namespace/class/method');
+        return $this->_call('call', $namespace, $class, $method, $arguments);
+    }
+
+
+    /**
+     * Call static.
+     *
+     * @param string $namespace
+     * @param string $class
+     * @param string $method
+     * @param array  $arguments
+     *
+     * @return mixed
+     */
+    public function callStatic($namespace, $class, $method, $arguments) {
+        return $this->_call('callstatic', $namespace, $class, $method, $arguments);
+    }
+
+
+    /*
+     * Call.
+     *
+     * @param string $type
+     * @param string $namespace
+     * @param string $class
+     * @param string $method
+     * @param array  $arguments
+     *
+     * @return mixed
+     */
+    protected function _call($type, $namespace, $class, $method, $arguments) {
+        if (empty($type) || empty($namespace) || empty($class) || empty($method)) {
+            throw new Exception('wrong type/namespace/class/method');
         }
 
-        $this->send('call', [
+        $this->send($type, [
             'namespace' => $namespace,
             'class' => $class,
             'method' => $method,
@@ -47,7 +78,7 @@ class CallClient extends SyncClient {
             throw new Exception('wrong data');
         }
 
-        if (empty($data['type']) || ($data['type'] != 'call')) {
+        if (empty($data['type']) || ($data['type'] != $type)) {
             throw new Exception('wrong type');
         }
 

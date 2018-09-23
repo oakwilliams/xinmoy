@@ -1,6 +1,6 @@
 <?php
 /*
- * Service
+ * Proxy
  *
  * @author Oak Williams <oakwilliams@gmail.com>
  * @date   07/26/2018
@@ -13,9 +13,9 @@ namespace Xinmoy\Client;
 
 
 /**
- * Service
+ * Proxy
  */
-class Service {
+class Proxy {
     /*
      * Client
      *
@@ -44,11 +44,12 @@ class Service {
      * Construct.
      */
     public function __construct() {
-        $service = get_called_class();
-        $service = explode('\\', $service);
-        $this->_class = array_pop($service);
-        $this->_namespace = join('\\', $service);
-        $connection = Connection::getInstance()->select($this->_namespace);
+        $class = get_called_class();
+        $class = explode('\\', $class);
+        $this->_class = array_pop($class);
+        $this->_namespace = join('\\', $class);
+        $name = array_shift($class);
+        $connection = Connection::getInstance()->select($name);
         if (empty($connection)) {
             throw new Exception('nonexisted connection');
         }
@@ -92,5 +93,40 @@ class Service {
         }
 
         return $this->_client->call($this->_namespace, $this->_class, $method, $arguments);
+    }
+
+
+    /**
+     * Call static.
+     *
+     * @param string $method    method
+     * @param array  $arguments arguments
+     *
+     * @return mixed
+     */
+    public static function __callStatic($method, $arguments) {
+        $proxy = new static();
+        return $proxy->_callStatic($method, $arguments);
+    }
+
+
+    /*
+     * Call static.
+     *
+     * @param string $method    method
+     * @param array  $arguments arguments
+     *
+     * @return mixed
+     */
+    protected function _callStatic($method, $arguments) {
+        if (empty($this->_client)) {
+            throw new Exception('client init failed');
+        }
+
+        if (empty($this->_namespace) || empty($this->_class)) {
+            throw new Exception('wrong namespace/class');
+        }
+
+        return $this->_client->callStatic($this->_namespace, $this->_class, $method, $arguments);
     }
 }
