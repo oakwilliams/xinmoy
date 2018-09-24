@@ -27,48 +27,6 @@ use Demo\Service\DemoService;
  */
 class DemoController extends BaseController {
     /**
-     * Test.
-     *
-     * @param array $data            data
-     * @param array $request_cookie  optional, request cookie
-     * @param array $response_cookie optional, response cookie
-     *
-     * @return array
-     */
-    public function test($data, $request_cookie = null, &$response_cookie = null) {
-        if (empty($data['hello']) || empty($data['world'])) {
-            throw new Exception('wrong hello/world', 2);
-        }
-
-        $demo_service = new DemoService();
-        $greeting = $demo_service->test($data['hello'], $data['world']);
-        $response_cookie = $request_cookie;
-        return [
-            'greeting' => $greeting
-        ];
-    }
-
-
-    /**
-     * Test static.
-     *
-     * @param array $data data
-     *
-     * @return array
-     */
-    public function testStatic($data) {
-        if (empty($data['hello']) || empty($data['world'])) {
-            throw new Exception('wrong hello/world', 2);
-        }
-
-        $greeting = DemoService::testStatic($data['hello'], $data['world']);
-        return [
-            'greeting' => $greeting
-        ];
-    }
-
-
-    /**
      * Test config.
      *
      * @param array $data data
@@ -104,6 +62,48 @@ class DemoController extends BaseController {
     public function testLang($data) {
         return [
             'demo' => DemoLang::TEST()
+        ];
+    }
+
+
+    /**
+     * Test static.
+     *
+     * @param array $data data
+     *
+     * @return array
+     */
+    public function testStatic($data) {
+        if (empty($data['hello']) || empty($data['world'])) {
+            throw new Exception('wrong hello/world', 2);
+        }
+
+        $greeting = DemoService::testStatic($data['hello'], $data['world']);
+        return [
+            'greeting' => $greeting
+        ];
+    }
+
+
+    /**
+     * Test.
+     *
+     * @param array $data            data
+     * @param array $request_cookie  optional, request cookie
+     * @param array $response_cookie optional, response cookie
+     *
+     * @return array
+     */
+    public function test($data, $request_cookie = null, &$response_cookie = null) {
+        if (empty($data['hello']) || empty($data['world'])) {
+            throw new Exception('wrong hello/world', 2);
+        }
+
+        $demo_service = new DemoService();
+        $greeting = $demo_service->test($data['hello'], $data['world']);
+        $response_cookie = $request_cookie;
+        return [
+            'greeting' => $greeting
         ];
     }
 
