@@ -73,18 +73,18 @@ use Xinmoy\Base\BaseService;
 
 
 class DemoService extends BaseService {
+    public static function testStatic($hello, $world) {
+        $demo_service = new static();
+        return $demo_service->test($hello, $world);
+    }
+
+
     public function test($hello, $world) {
         if (empty($hello) || empty($world)) {
             throw new Exception('wrong hello/world', 2);
         }
 
         return "{$hello}, {$world}!";
-    }
-
-
-    public static function testStatic($hello, $world) {
-        $demo_service = new static();
-        return $demo_service->test($hello, $world);
     }
 }
 ```
@@ -124,6 +124,18 @@ class DemoController extends BaseController {
     }
 
 
+    public function testStatic($data) {
+        if (empty($data['hello']) || empty($data['world'])) {
+            throw new Exception('wrong hello/world', 2);
+        }
+
+        $greeting = DemoService::testStatic($data['hello'], $data['world']);
+        return [
+            'greeting' => $greeting
+        ];
+    }
+
+
     public function test($data, $request_cookie = null, &$response_cookie = null) {
         if (empty($data['hello']) || empty($data['world'])) {
             throw new Exception('wrong hello/world', 2);
@@ -136,24 +148,15 @@ class DemoController extends BaseController {
             'greeting' => $greeting
         ];
     }
-
-
-    public function testStatic($data) {
-        if (empty($data['hello']) || empty($data['world'])) {
-            throw new Exception('wrong hello/world', 2);
-        }
-
-        $greeting = DemoService::testStatic($data['hello'], $data['world']);
-        return [
-            'greeting' => $greeting
-        ];
-    }
 }
 ```
 ## Test
 ```
-http://172.17.0.4/Demo/Demo/test
+http://172.17.0.4/Demo/Demo/testConfig
+http://172.17.0.4/Demo/Demo/testError
+http://172.17.0.4/Demo/Demo/testLang
 http://172.17.0.4/Demo/Demo/testStatic
+http://172.17.0.4/Demo/Demo/test
 ```
 ## Documentation
 For more information, please visit [Wiki](https://github.com/oakwilliams/xinmoy/wiki).
