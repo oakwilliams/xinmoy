@@ -26,6 +26,12 @@ class DemoService extends BaseService {
 
         return "{$hello}, {$world}!";
     }
+
+
+    public static function testStatic($hello, $world) {
+        $demo_service = new static();
+        return $demo_service->test($hello, $world);
+    }
 }
 ```
 ## DemoController
@@ -54,11 +60,24 @@ class DemoController extends BaseController {
             'greeting' => $greeting
         ];
     }
+
+
+    public function testStatic($data) {
+        if (empty($data['hello']) || empty($data['world'])) {
+            throw new Exception('wrong hello/world', 2);
+        }
+
+        $greeting = DemoService::testStatic($data['hello'], $data['world']);
+        return [
+            'greeting' => $greeting
+        ];
+    }
 }
 ```
 ## Test
 ```
 http://172.17.0.4/Demo/Demo/test
+http://172.17.0.4/Demo/Demo/testStatic
 ```
 ## Documentation
 For more information, please visit [Wiki](https://github.com/oakwilliams/xinmoy/wiki).
