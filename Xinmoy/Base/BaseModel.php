@@ -85,7 +85,7 @@ class BaseModel {
         $this->_slave = MySQLConnection::getInstance()->selectSlave();
         $this->setMode(self::MASTER_SLAVE);
         $this->_table = $this->_getDefaultTable();
-        $this->_primaryKey = 'id';
+        $this->_primaryKey = '`id`';
     }
 
 
@@ -128,7 +128,8 @@ class BaseModel {
         }
         $table = $matches[1];
         $table = preg_replace('/([a-z0-9])([A-Z])/', '${1}_${2}', $table);
-        return strtolower($table);
+        $table = strtolower($table);
+        return "`{$table}`";
     }
 
 
@@ -237,8 +238,9 @@ class BaseModel {
             throw new Exception('wrong table/primary key');
         }
 
-        $rows = $this->query("SELECT {$fields} FROM {$this->_table} WHERE {$this->_primaryKey} = :{$this->_primaryKey}", [
-            ":{$this->_primaryKey}" => $id
+        $primary_key = preg_replace('/`/', '', $this->_primaryKey);
+        $rows = $this->query("SELECT {$fields} FROM {$this->_table} WHERE {$this->_primaryKey} = :{$primary_key}", [
+            ":{$primary_key}" => $id
         ]);
         return empty($rows) ? null : reset($rows);
     }
@@ -256,11 +258,14 @@ class BaseModel {
             throw new Exception('wrong row');
         }
 
-        if (empty($this->_table) || empty($this->_primaryKey)) {
-            throw new Exception('wrong table/primary key');
+        if (empty($this->_table)) {
+            throw new Exception('wrong table');
         }
 
         $columns = array_keys($row);
+        $columns = array_map(function($column) {
+            return "`{$column}`";
+        }, $columns);
         $columns = join(', ', $columns);
         foreach ($row as $key => $value) {
             $row[":{$key}"] = $value;
@@ -292,15 +297,16 @@ class BaseModel {
 
         $columns = array_keys($row);
         $pairs = array_map(function($column) {
-            return "{$column} = :{$column}";
+            return "`{$column}` = :{$column}";
         }, $columns);
         $pairs = join(', ', $pairs);
-        $row[$this->_primaryKey] = $id;
+        $primary_key = preg_replace('/`/', '', $this->_primaryKey);
+        $row[$primary_key] = $id;
         foreach ($row as $key => $value) {
             $row[":{$key}"] = $value;
             unset($row[$key]);
         }
-        return $this->execute("UPDATE {$this->_table} SET {$pairs} WHERE {$this->_primaryKey} = :{$this->_primaryKey}", $row);
+        return $this->execute("UPDATE {$this->_table} SET {$pairs} WHERE {$this->_primaryKey} = :{$primary_key}", $row);
     }
 
 
@@ -320,8 +326,9 @@ class BaseModel {
             throw new Exception('wrong table/primary key');
         }
 
-        return $this->execute("DELETE FROM {$this->_table} WHERE {$this->_primaryKey} = :{$this->_primaryKey}", [
-            ":{$this->_primaryKey}" => $id
+        $primary_key = preg_replace('/`/', '', $this->_primaryKey);
+        return $this->execute("DELETE FROM {$this->_table} WHERE {$this->_primaryKey} = :{$primary_key}", [
+            ":{$primary_key}" => $id
         ]);
     }
 }
