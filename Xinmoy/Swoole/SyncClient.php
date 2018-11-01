@@ -44,6 +44,14 @@ class SyncClient {
     protected $_port = -1;
 
 
+    /*
+     * Timeout
+     *
+     * @property float
+     */
+    protected $_timeout = 3;
+
+
     /**
      * Construct.
      *
@@ -68,6 +76,30 @@ class SyncClient {
 
 
     /**
+     * Set timeout.
+     *
+     * @param float $timeout timeout
+     */
+    public function setTimeout($timeout) {
+        if ($timeout <= 0) {
+            throw new Exception('wrong timeout');
+        }
+
+        $this->_timeout = $timeout;
+    }
+
+
+    /**
+     * Get timeout.
+     *
+     * @return float
+     */
+    public function getTimeout() {
+        return $this->_timeout;
+    }
+
+
+    /**
      * Connect.
      */
     public function connect() {
@@ -79,7 +111,11 @@ class SyncClient {
             throw new Exception('wrong host/port');
         }
 
-        $this->_client->connect($this->_host, $this->_port, 1);
+        if ($this->_timeout <= 0) {
+            throw new Exception('wrong timeout');
+        }
+
+        $this->_client->connect($this->_host, $this->_port, $this->_timeout);
     }
 
 
