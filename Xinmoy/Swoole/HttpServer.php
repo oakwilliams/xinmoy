@@ -188,6 +188,7 @@ class HttpServer {
             throw new Exception('response init failed');
         }
 
+        $response->header('Content-Type', 'application/json');
         $message = json_encode([
             'code' => $code,
             'message' => $message,
