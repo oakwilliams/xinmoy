@@ -89,7 +89,19 @@ class MySQLClient {
         $this->_port = $port;
         $this->_user = $user;
         $this->_password = $password;
-        $this->_pdo = new PDO("mysql:dbname={$database};host={$host};port={$port}", $user, $password, [
+        $this->_connect();
+    }
+
+
+    /*
+     * Connect.
+     */
+    protected function _connect() {
+        if (empty($this->_database) || empty($this->_host) || ($this->_port < 0)) {
+            throw new Exception('wrong database/host/port');
+        }
+
+        $this->_pdo = new PDO("mysql:dbname={$this->_database};host={$this->_host};port={$this->_port}", $this->_user, $this->_password, [
             PDO::ATTR_PERSISTENT => true
         ]);
     }
@@ -207,18 +219,32 @@ class MySQLClient {
             throw new Exception('init failed');
         }
 
-        $statement = $this->_pdo->prepare($statement);
+        $pdo_statement = null;
         try {
-            if (!$statement->execute($values)) {
-                $error = $statement->errorInfo();
-                if (!empty($error)) {
+            $max = 3;
+            $i = 0;
+            while ($i < $max) {
+                $pdo_statement = $this->_pdo->prepare($statement);
+                if ($pdo_statement->execute($values)) {
+                    break;
+                }
+
+                $error = $pdo_statement->errorInfo();
+                if (empty($error)) {
+                    break;
+                }
+
+                if (($error[1] != 2006) || ($i == $max - 1)) {
                     throw new Exception($error[2]);
                 }
+
+                $this->_connect();
+                $i++;
             }
         } catch (Exception $e) {
             handle_exception($e);
             throw new Exception('sql error');
         }
-        return $statement;
+        return $pdo_statement;
     }
 }
