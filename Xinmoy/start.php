@@ -186,6 +186,10 @@ if (empty($config)) {
     throw new Exception('wrong config');
 }
 
+if (!empty($config['timezone'])) {
+    date_default_timezone_set($config['timezone']);
+}
+
 if (empty($config['role'])) {
     throw new Exception('wrong role');
 }

@@ -1,4 +1,5 @@
 {
+    "timezone": "UTC",
     "role": "register",
     "register": {
         "host": "0.0.0.0",
