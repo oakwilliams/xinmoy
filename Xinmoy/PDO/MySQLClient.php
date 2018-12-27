@@ -124,11 +124,11 @@ class MySQLClient {
         if ($this->_pdo->inTransaction()) {
             $callback();
         } else {
-            if (!$this->_pdo->beginTransaction()) {
-                throw new Exception('begin transaction failed');
-            }
-
             try {
+                if (!$this->_pdo->beginTransaction()) {
+                    throw new Exception('begin transaction failed');
+                }
+
                 $callback();
                 $this->_pdo->commit();
             } catch (Exception $e) {
