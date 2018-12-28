@@ -246,6 +246,33 @@ class Server {
 
 
     /**
+     * Connections
+     *
+     * @return array
+     */
+    public function connections() {
+        if (empty($this->_server)) {
+            throw new Exception('init failed');
+        }
+
+        $connections = [];
+        $last = 0;
+        $size = 100;
+        while (true) {
+            $fds = $this->_server->connection_list($last, $size);
+            if (empty($fds)) {
+                break;
+            }
+
+            $connections = array_merge($connections, $fds);
+            $last = end($fds);
+        }
+
+        return $connections;
+    }
+
+
+    /**
      * Close.
      *
      * @param int $fd fd
@@ -367,6 +394,39 @@ class Server {
 
         foreach ($members as $member) {
             yield $this->send($member, $type, $data);
+        }
+    }
+
+
+    /**
+     * Send to all.
+     *
+     * @param string $type  type
+     * @param array  $data  optional, data
+     */
+    public function sendToAll($type, $data = null) {
+        foreach ($this->_sendToAll($type, $data) as $i) { }
+    }
+
+
+    /*
+     * Send to all.
+     *
+     * @param string $type  type
+     * @param array  $data  optional, data
+     */
+    protected function _sendToAll($type, $data = null) {
+        if (empty($type)) {
+            throw new Exception('wrong type');
+        }
+
+        $fds = $this->connections();
+        if (empty($fds)) {
+            return;
+        }
+
+        foreach ($fds as $fd) {
+            yield $this->send($fd, $type, $data);
         }
     }
 }
