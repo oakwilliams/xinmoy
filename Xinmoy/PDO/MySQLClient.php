@@ -22,6 +22,14 @@ use Xinmoy\Lib\Log;
  * MySQL Client
  */
 class MySQLClient {
+    /**
+     * Max Retry Times
+     *
+     * @const int
+     */
+    const MAX_RETRY_TIMES = 3;
+
+
     /*
      * PDO
      *
@@ -124,11 +132,21 @@ class MySQLClient {
         if ($this->_pdo->inTransaction()) {
             $callback();
         } else {
-            try {
-                if (!$this->_pdo->beginTransaction()) {
+            $i = 0;
+            while ($i < self::MAX_RETRY_TIMES) {
+                if ($this->_pdo->beginTransaction()) {
+                    break;
+                }
+
+                if ($i == self::MAX_RETRY_TIMES - 1) {
                     throw new Exception('begin transaction failed');
                 }
 
+                $this->_connect();
+                $i++;
+            }
+
+            try {
                 $callback();
                 $this->_pdo->commit();
             } catch (Exception $e) {
@@ -224,9 +242,8 @@ class MySQLClient {
 
         $pdo_statement = null;
         try {
-            $max = 3;
             $i = 0;
-            while ($i < $max) {
+            while ($i < self::MAX_RETRY_TIMES) {
                 $pdo_statement = $this->_pdo->prepare($statement);
                 if ($pdo_statement->execute($values)) {
                     break;
@@ -237,7 +254,7 @@ class MySQLClient {
                     break;
                 }
 
-                if (($error[1] != 2006) || ($i == $max - 1)) {
+                if (($error[1] != 2006) || ($i == self::MAX_RETRY_TIMES - 1)) {
                     throw new Exception($error[2]);
                 }
 
