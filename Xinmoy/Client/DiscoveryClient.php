@@ -72,9 +72,9 @@ class DiscoveryClient extends AsyncClient {
      * onRegister
      *
      * @param Client $client client
-     * @param array  $data   data
+     * @param array  $data   optional, data
      */
-    public function onRegister($client, $data) {
+    public function onRegister($client, $data = null) {
         if (empty($data['name']) || !isset($data['fd']) || ($data['fd'] < 0) || empty($data['host']) || !isset($data['port']) || ($data['port'] < 0)) {
             throw new Exception('wrong name/fd/host/port');
         }
@@ -95,9 +95,9 @@ class DiscoveryClient extends AsyncClient {
      * onUnregister
      *
      * @param Client $client client
-     * @param array  $data   data
+     * @param array  $data   optional, data
      */
-    public function onUnregister($client, $data) {
+    public function onUnregister($client, $data = null) {
         if (empty($data['name']) || !isset($data['fd']) || ($data['fd'] < 0) || empty($data['host']) || !isset($data['port']) || ($data['port'] < 0)) {
             throw new Exception('wrong name/fd/host/port');
         }
@@ -118,9 +118,9 @@ class DiscoveryClient extends AsyncClient {
      * onDiscover
      *
      * @param Client $client client
-     * @param array  $data   data
+     * @param array  $data   optional, data
      */
-    public function onDiscover($client, $data) {
+    public function onDiscover($client, $data = null) {
         if (empty($data['name'])) {
             throw new Exception('wrong name');
         }
