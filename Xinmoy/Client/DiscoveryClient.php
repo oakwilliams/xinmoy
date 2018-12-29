@@ -12,6 +12,8 @@
 namespace Xinmoy\Client;
 
 
+use Exception;
+
 use Xinmoy\Swoole\AsyncClient;
 use Xinmoy\Swoole\Process;
 use Xinmoy\Lib\ServerAddress;

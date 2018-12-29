@@ -12,6 +12,8 @@
 namespace Xinmoy\Client;
 
 
+use Exception;
+
 use Swoole\Process;
 
 
