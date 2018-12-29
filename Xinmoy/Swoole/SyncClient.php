@@ -11,6 +11,8 @@
 namespace Xinmoy\Swoole;
 
 
+use Exception;
+
 use Swoole\Client;
 
 use Xinmoy\Lib\Log;

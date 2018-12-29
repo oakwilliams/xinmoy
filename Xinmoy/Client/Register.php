@@ -12,6 +12,9 @@
 namespace Xinmoy\Client;
 
 
+use Exception;
+
+
 /**
  * Register
  */
