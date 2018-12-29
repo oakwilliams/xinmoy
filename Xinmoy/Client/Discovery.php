@@ -116,9 +116,9 @@ trait Discovery {
     /**
      * onRegister
      *
-     * @param array $data data
+     * @param array $data optional, data
      */
-    public function onRegister($data) {
+    public function onRegister($data = null) {
         if (empty($data['name']) || empty($data['host']) || !isset($data['port']) || ($data['port'] < 0)) {
             throw new Exception('wrong name/host/port');
         }
@@ -130,9 +130,9 @@ trait Discovery {
     /**
      * onUnregister
      *
-     * @param array $data data
+     * @param array $data optional, data
      */
-    public function onUnregister($data) {
+    public function onUnregister($data = null) {
         if (empty($data['name']) || empty($data['host']) || !isset($data['port']) || ($data['port'] < 0)) {
             throw new Exception('wrong name/host/port');
         }
@@ -144,9 +144,9 @@ trait Discovery {
     /**
      * onDiscover
      *
-     * @param array $data data
+     * @param array $data optional, data
      */
-    public function onDiscover($data) {
+    public function onDiscover($data = null) {
         if (empty($data['name'])) {
             throw new Exception('wrong name');
         }
