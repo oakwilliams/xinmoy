@@ -305,6 +305,11 @@ class Server {
             throw new Exception('init failed');
         }
 
+        $connection = $this->_server->connection_info($fd);
+        if (empty($connection)) {
+            return;
+        }
+
         $message = json_encode([
             'type' => $type,
             'data' => $data
