@@ -48,7 +48,7 @@ class Server extends SwooleServer {
      * @param Server $server     server
      * @param int    $fd         fd
      * @param int    $reactor_id reactor id
-     * @param object $data       data
+     * @param array  $data       data
      */
     public function onCall($server, $fd, $reactor_id, $data) {
         try {
@@ -84,7 +84,7 @@ class Server extends SwooleServer {
      * @param Server $server     server
      * @param int    $fd         fd
      * @param int    $reactor_id reactor id
-     * @param object $data       data
+     * @param array  $data       data
      */
     public function onCallStatic($server, $fd, $reactor_id, $data) {
         try {

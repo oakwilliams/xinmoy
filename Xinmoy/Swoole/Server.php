@@ -238,7 +238,7 @@ class Server {
      * @param Server $server     server
      * @param int    $fd         fd
      * @param int    $reactor_id reactor id
-     * @param object $data       data
+     * @param array  $data       data
      */
     public function onPing($server, $fd, $reactor_id, $data) {
         $this->send($fd, 'ping');
