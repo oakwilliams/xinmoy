@@ -171,8 +171,7 @@ class Server {
         try {
             Session::getInstance()->create($fd);
         } catch (Exception $e) {
-            $message = $e->getMessage();
-            $this->sendError($fd, $message);
+            $this->sendError($fd, $e);
         }
     }
 
@@ -209,8 +208,7 @@ class Server {
 
             $this->{$method}($server, $fd, $reactor_id, $message['data']);
         } catch (Exception $e) {
-            $message = $e->getMessage();
-            $this->sendError($fd, $message);
+            $this->sendError($fd, $e);
         }
     }
 
@@ -226,8 +224,7 @@ class Server {
         try {
             Session::getInstance()->destroy($fd);
         } catch (Exception $e) {
-            $message = $e->getMessage();
-            $this->sendError($fd, $message);
+            $this->sendError($fd, $e);
         }
     }
 
@@ -325,16 +322,30 @@ class Server {
     /**
      * Send error.
      *
-     * @param int    $fd      fd
-     * @param string $message message
+     * @param int       $fd fd
+     * @param Exception $e  exception
      */
-    public function sendError($fd, $message) {
+    public function sendError($fd, $e) {
         try {
-            if (($fd < 0) || empty($message)) {
-                throw new Exception('wrong fd/message');
+            if ($fd < 0) {
+                throw new Exception('wrong fd');
             }
 
-            $this->send($fd, 'error', [ 'message' => $message ]);
+            if (empty($e)) {
+                $e = new Exception('system error', 1);
+            }
+
+            $code = $e->getCode();
+            $message = $e->getMessage();
+
+            if (empty($code)) {
+                $code = 1;
+            }
+
+            $this->send($fd, 'error', [
+                'code' => $code,
+                'message' => $message
+            ]);
         } catch (Exception $e) {
             handle_exception($e);
         }
